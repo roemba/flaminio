@@ -12,11 +12,6 @@ var (
 	signKey *rsa.PrivateKey
 )
 
-type CompleteClaims struct {
-	Role int `json:"role"`
-	jwt.StandardClaims
-}
-
 func initKeys() {
 	signBytes, err := ioutil.ReadFile(privKeyPath)
 	fatal(err)

@@ -11,14 +11,17 @@ import (
 
 func ValidateTokenMiddleware(c *gin.Context){
 
-	token, err := request.ParseFromRequestWithClaims(c.Request, request.AuthorizationHeaderExtractor, &CompleteClaims{},
+	token, err := request.ParseFromRequestWithClaims(c.Request, request.AuthorizationHeaderExtractor, &jwt.StandardClaims{},
 		func(token *jwt.Token) (interface{}, error) {
 			return verifyKey, nil
 		})
 
 	if err == nil {
-		if claims, ok := token.Claims.(*CompleteClaims); ok && token.Valid {
-			fmt.Printf("%v %v %v\n", claims.Role, claims.StandardClaims.Id, claims.StandardClaims.NotBefore)
+		if claims, ok := token.Claims.(*jwt.StandardClaims); ok && token.Valid {
+			//Get user and store it in the context
+			var user User
+			db.First(&user, User{StandardModel:StandardModel{UUID: claims.Subject}})
+			c.Set("user", user)
 			c.Next()
 		} else {
 			c.AbortWithError(http.StatusUnauthorized, errors.New("token is not valid"))

@@ -8,11 +8,12 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"errors"
+	"log"
 )
 
 
 type UserCredentials struct {
-	Username string `json:"username"`
+	Email string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -22,11 +23,6 @@ type Response struct {
 
 type Token struct {
 	Token string `json:"token"`
-}
-
-func ProtectedHandler(c *gin.Context) {
-	response := Response{"Gained access to protected resource"}
-	JsonResponse(response, c.Writer)
 }
 
 func LoginHandler(c *gin.Context) {
@@ -41,22 +37,20 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	var user User
-	if query := db.First(&user, User{Username: userInput.Username}); query.RecordNotFound() || !checkPasswordHash(userInput.Password, user.Password) {
+	if query := db.First(&user, User{Email: userInput.Email}); query.RecordNotFound() || !checkPasswordHash(userInput.Password, user.Password) {
 		c.AbortWithError(http.StatusForbidden, errors.New("error logging in"))
 		fmt.Fprint(c.Writer, "Invalid credentials")
 		return
 	}
 
 	token := jwt.New(jwt.SigningMethodRS256)
-	claims := CompleteClaims{
-		1,
-		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 10).Unix(),
+	claims := jwt.StandardClaims {
+			ExpiresAt: time.Now().Add(time.Hour * 10).Unix(), //10 hours from now
 			IssuedAt: time.Now().Unix(),
-			NotBefore: time.Now().Add(time.Minute * -2).Unix(),
-			Id: "appelflapid",
-		},
-	}
+			NotBefore: time.Now().Add(time.Minute * -2).Unix(), //two minutes ago
+			Subject: user.UUID,
+		}
+
 	token.Claims = claims
 
 	if err != nil {
@@ -74,5 +68,20 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	response := Token{tokenString}
+	JsonResponse(response, c.Writer)
+}
+
+func ProtectedHandler(c *gin.Context) {
+	value, exists := c.Get("user")
+	if !exists {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
+		fmt.Fprintln(c.Writer, "Error extracting the key")
+		fatal(errors.New("could not load user from context"))
+		return
+	}
+	user := value.(User)
+
+	log.Println(user.Email)
+	response := Response{"Gained access to protected resource"}
 	JsonResponse(response, c.Writer)
 }

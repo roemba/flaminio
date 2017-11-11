@@ -24,6 +24,7 @@ func fatal(err error) {
 }
 
 func startServer(){
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	setRoutes(router)
 
@@ -35,13 +36,12 @@ func connectToDatabase(){
 	db, err = gorm.Open("postgres", "host=localhost user=flaminio dbname=flaminio sslmode=disable password=ZzS08RNyosHD2xg49k9Z")
 	fatal(err)
 
-	db.AutoMigrate(&User{})
-
-	if db.First(&User{}, User{Username:"admin"}).RecordNotFound() {
+	db.AutoMigrate(&User{}, &Permission{})
+	if db.First(&User{}, User{Email:"admin@admin.com"}).RecordNotFound() {
 		log.Println("Default admin user not found. Creating one...")
 		hashedPassword, err := hashPassword("admin")
 		fatal(err)
-		db.Create(User{FirstName:"admin", LastName:"admin", Username:"admin", Password:hashedPassword})
+		db.Create(&User{FirstName:"admin", LastName:"admin", Email:"admin@admin.com", Password:hashedPassword})
 	}
 }
 
