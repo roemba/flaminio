@@ -40,7 +40,7 @@ export default {
 	computed: {
 		dropdownLabel: function() {
 			if (this.$auth.check()) {
-				return this.$auth.user().first_name + " " + this.$auth.user().last_name;
+				return this.$auth.user().firstname + " " + this.$auth.user().lastname;
 			}
 			return "Please login";
 		}

@@ -24,7 +24,7 @@ func fatal(err error) {
 }
 
 func startServer(){
-	gin.SetMode(gin.ReleaseMode)
+	//gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	setRoutes(router)
 

@@ -11,6 +11,10 @@ import (
 	"log"
 )
 
+const (
+	STATUS_SUCCESS = "success"
+	STATUS_FAIL = "failed"
+)
 
 type UserCredentials struct {
 	Email string `json:"email"`
@@ -18,11 +22,43 @@ type UserCredentials struct {
 }
 
 type Response struct {
-	Data string `json:"data"`
+	Status string `json:"status"`
+	Data interface{} `json:"data"`
 }
 
-type Token struct {
-	Token string `json:"token"`
+func createNewToken(user User, c *gin.Context) (tokenString string) {
+	token := jwt.New(jwt.SigningMethodRS256)
+	claims := jwt.StandardClaims {
+		ExpiresAt: time.Now().Add(time.Hour * 10).Unix(), //10 hours from now
+		IssuedAt: time.Now().Unix(),
+		NotBefore: time.Now().Add(time.Minute * -2).Unix(), //two minutes ago
+		Subject: user.UUID,
+	}
+
+	token.Claims = claims
+
+	tokenString, err := token.SignedString(signKey)
+
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error while signing the token"))
+		fmt.Fprintln(c.Writer, "Error while signing the token")
+		fatal(err)
+		return
+	}
+
+	return tokenString
+}
+
+
+func fetchUser(c *gin.Context) (user User) {
+	value, exists := c.Get("user")
+	if !exists {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
+		fmt.Fprintln(c.Writer, "Error extracting the key")
+		fatal(errors.New("could not load user from context"))
+		return
+	}
+	return value.(User)
 }
 
 func LoginHandler(c *gin.Context) {
@@ -43,45 +79,25 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token := jwt.New(jwt.SigningMethodRS256)
-	claims := jwt.StandardClaims {
-			ExpiresAt: time.Now().Add(time.Hour * 10).Unix(), //10 hours from now
-			IssuedAt: time.Now().Unix(),
-			NotBefore: time.Now().Add(time.Minute * -2).Unix(), //two minutes ago
-			Subject: user.UUID,
-		}
-
-	token.Claims = claims
-
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
-		fmt.Fprintln(c.Writer, "Error extracting the key")
-		fatal(err)
-	}
-
-	tokenString, err := token.SignedString(signKey)
-
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error while signing the token"))
-		fmt.Fprintln(c.Writer, "Error while signing the token")
-		fatal(err)
-	}
-
-	response := Token{tokenString}
-	JsonResponse(response, c.Writer)
+	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
 }
 
 func ProtectedHandler(c *gin.Context) {
-	value, exists := c.Get("user")
-	if !exists {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
-		fmt.Fprintln(c.Writer, "Error extracting the key")
-		fatal(errors.New("could not load user from context"))
-		return
-	}
-	user := value.(User)
+	user := fetchUser(c)
 
 	log.Println(user.Email)
-	response := Response{"Gained access to protected resource"}
+	response := Response{STATUS_SUCCESS,"Gained access to protected resource"}
 	JsonResponse(response, c.Writer)
+}
+
+func UserHandler(c *gin.Context) {
+	user := fetchUser(c)
+
+	JsonResponse(Response{STATUS_SUCCESS,user}, c.Writer)
+}
+
+func RefreshHandler(c *gin.Context) {
+	user := fetchUser(c)
+
+	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
 }

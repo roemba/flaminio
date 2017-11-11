@@ -16,7 +16,8 @@ func setRoutes(router *gin.Engine) {
 		authorized := v1.Group("/")
 		authorized.Use(ValidateTokenMiddleware)
 		{
-			authorized.GET("/test", ProtectedHandler)
+			authorized.GET("/auth/user", UserHandler)
+			authorized.GET("/auth/refresh", RefreshHandler)
 		}
 	}
 }
