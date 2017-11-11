@@ -9,6 +9,7 @@ import (
 	"strings"
 	"github.com/gin-gonic/gin"
 	"errors"
+	"log"
 )
 
 
@@ -40,6 +41,10 @@ func LoginHandler(c *gin.Context) {
 		fmt.Fprint(c.Writer, "Error in request")
 		return
 	}
+
+	var duser User
+	db.Where(&User{Username:user.Username}).First(&duser)
+	log.Println(duser.ID)
 
 	if strings.ToLower(user.Username) != "someone" {
 		if user.Password != "p@ssword" {
