@@ -21,6 +21,7 @@ func ValidateTokenMiddleware(c *gin.Context){
 			//Get user and store it in the context
 			var user User
 			db.First(&user, User{StandardModel:StandardModel{UUID: claims.Subject}})
+			// TODO: Get permissions together with user
 			c.Set("user", user)
 			c.Next()
 		} else {
