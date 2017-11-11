@@ -37,7 +37,7 @@ func connectToDatabase(){
 
 	db.AutoMigrate(&User{})
 
-	if db.Find(&User{}, User{Username:"admin"}).RecordNotFound() {
+	if db.First(&User{}, User{Username:"admin"}).RecordNotFound() {
 		log.Println("Default admin user not found. Creating one...")
 		hashedPassword, err := hashPassword("admin")
 		fatal(err)

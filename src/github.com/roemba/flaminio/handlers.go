@@ -6,10 +6,8 @@ import (
 	"time"
 	"net/http"
 	"encoding/json"
-	"strings"
 	"github.com/gin-gonic/gin"
 	"errors"
-	"log"
 )
 
 
@@ -32,9 +30,9 @@ func ProtectedHandler(c *gin.Context) {
 }
 
 func LoginHandler(c *gin.Context) {
-	var user UserCredentials
+	var userInput UserCredentials
 
-	err := json.NewDecoder(c.Request.Body).Decode(&user)
+	err := json.NewDecoder(c.Request.Body).Decode(&userInput)
 
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, errors.New("error in request"))
@@ -42,16 +40,11 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	var duser User
-	db.Where(&User{Username:user.Username}).First(&duser)
-	log.Println(duser.ID)
-
-	if strings.ToLower(user.Username) != "someone" {
-		if user.Password != "p@ssword" {
-			c.AbortWithError(http.StatusForbidden, errors.New("error logging in"))
-			fmt.Fprint(c.Writer, "Invalid credentials")
-			return
-		}
+	var user User
+	if query := db.First(&user, User{Username: userInput.Username}); query.RecordNotFound() || !checkPasswordHash(userInput.Password, user.Password) {
+		c.AbortWithError(http.StatusForbidden, errors.New("error logging in"))
+		fmt.Fprint(c.Writer, "Invalid credentials")
+		return
 	}
 
 	token := jwt.New(jwt.SigningMethodRS256)
