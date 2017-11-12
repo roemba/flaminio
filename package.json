@@ -16,7 +16,7 @@
   "author": "Roemer Hendrikx",
   "license": "ISC",
   "devDependencies": {
-    "@websanova/vue-auth": "^2.18.3-beta",
+    "@websanova/vue-auth": "^2.20.4-beta",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "css-loader": "^0.28.7",

@@ -8,7 +8,9 @@ import (
 func setRoutes(router *gin.Engine) {
 
 	router.Use(static.Serve("/", static.LocalFile("./public", true))) //May have some nasty performance implications
-	router.NoRoute(static.Serve("/", static.LocalFile("./public", true)))
+	router.NoRoute(func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
 
 	v1 := router.Group("/api/v1")
 	{

@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"errors"
-	"log"
 )
 
 const (

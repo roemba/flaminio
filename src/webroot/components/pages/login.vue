@@ -1,8 +1,9 @@
 <template>
 	<div class="outer-container">
-		<div class="container rounded">
-			<p>Please login using your provided user credentials</p>
-			<form @submit="login()" autocomplete="on" novalidate>
+		<div :class="['container', 'rounded', [$route.query.invalid ? 'incorrect-password' : '']]">
+			<p v-if="!$route.query.invalid">Please login using your provided user credentials</p>
+			<p v-else>Invalid username or password. Please try again.</p>
+			<form @submit.prevent="login()" autocomplete="on" novalidate>
 				<div class="form-group">
 					<label for="email">Email address</label>
 					<input v-model="email" type="email" :class="['form-control', [emailIsValid ? 'is-valid' : 'is-invalid']]" id="email" placeholder="Enter email" required>
@@ -98,5 +99,9 @@ export default {
 
 	.invalid-feedback {
 		color: bisque;
+	}
+
+	.incorrect-password {
+		background-color: #ef2b2b;
 	}
 </style>

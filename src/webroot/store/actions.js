@@ -10,6 +10,9 @@ export default {
 			rememberMe: payload.rememberMe,
 			success: () => {
 				commit(mutations.UPDATE_USER, {user: Vue.auth.user()});
+			},
+			error: () => {
+				Vue.router.push({name: "login", query: {invalid: true}});
 			}
 		});
 	}
