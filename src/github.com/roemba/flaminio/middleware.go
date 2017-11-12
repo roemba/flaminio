@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"errors"
+	"log"
 )
 
 func ValidateTokenMiddleware(c *gin.Context){
@@ -20,8 +21,11 @@ func ValidateTokenMiddleware(c *gin.Context){
 		if claims, ok := token.Claims.(*jwt.StandardClaims); ok && token.Valid {
 			//Get user and store it in the context
 			var user User
+			var permissions []Permission
 			db.First(&user, User{StandardModel:StandardModel{UUID: claims.Subject}})
-			// TODO: Get permissions together with user
+			db.Model(&user).Related(&permissions, "Permissions")
+			user.Permissions = permissions
+
 			c.Set("user", user)
 			c.Next()
 		} else {

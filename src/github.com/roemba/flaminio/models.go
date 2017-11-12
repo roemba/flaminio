@@ -17,11 +17,11 @@ type User struct {
 	LastName string `json:"lastname" gorm:"size:255;not null"`
 	Password string `json:"-" gorm:"type:bytea;not null"`
 	Email string `json:"email" gorm:"type:citext;not null;unique_index"`
-	Permissions []Permission `gorm:"many2many:user_permissions"`
+	Permissions []Permission `json:"permissions" gorm:"many2many:user_permissions"`
 }
 
 type Permission struct {
 	StandardModel
-	Name string `gorm:"size:255;not null"`
-	Users []User `gorm:"many2many:user_permissions"`
+	Name string `json:"name" gorm:"size:255;not null;unique"`
+	Users []User `json:"users" gorm:"many2many:user_permissions"`
 }
