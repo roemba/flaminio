@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/webroot" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/github.com/roemba" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/public" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

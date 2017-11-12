@@ -32,7 +32,7 @@ func createNewToken(user User, c *gin.Context) (tokenString string) {
 		ExpiresAt: time.Now().Add(time.Hour * 10).Unix(), //10 hours from now
 		IssuedAt: time.Now().Unix(),
 		NotBefore: time.Now().Add(time.Minute * -2).Unix(), //two minutes ago
-		Subject: user.UUID,
+		Subject: user.UUID.String(),
 	}
 
 	token.Claims = claims
@@ -49,8 +49,7 @@ func createNewToken(user User, c *gin.Context) (tokenString string) {
 	return tokenString
 }
 
-
-func fetchUser(c *gin.Context) (user User) {
+func getUserFromContext(c *gin.Context) (user User) {
 	value, exists := c.Get("user")
 	if !exists {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
@@ -72,8 +71,8 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	var user User
-	if query := db.First(&user, User{Email: userInput.Email}); query.RecordNotFound() || !checkPasswordHash(userInput.Password, user.Password) {
+	user, recordNotFound := getUser(userInput.Email)
+	if recordNotFound || !checkPasswordHash(userInput.Password, user.Password) {
 		c.AbortWithError(http.StatusForbidden, errors.New("error logging in"))
 		fmt.Fprint(c.Writer, "Invalid credentials")
 		return
@@ -82,22 +81,22 @@ func LoginHandler(c *gin.Context) {
 	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
 }
 
-func ProtectedHandler(c *gin.Context) {
-	user := fetchUser(c)
-
-	log.Println(user.Email)
-	response := Response{STATUS_SUCCESS,"Gained access to protected resource"}
-	JsonResponse(response, c.Writer)
-}
+//func ProtectedHandler(c *gin.Context) {
+//	user := getUserFromContext(c)
+//
+//	log.Println(user.Email)
+//	response := Response{STATUS_SUCCESS,"Gained access to protected resource"}
+//	JsonResponse(response, c.Writer)
+//}
 
 func UserHandler(c *gin.Context) {
-	user := fetchUser(c)
+	user := getUserFromContext(c)
 
 	JsonResponse(Response{STATUS_SUCCESS,user}, c.Writer)
 }
 
 func RefreshHandler(c *gin.Context) {
-	user := fetchUser(c)
+	user := getUserFromContext(c)
 
 	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
 }

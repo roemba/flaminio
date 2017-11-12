@@ -2,10 +2,11 @@ package flaminio
 
 import (
 	"time"
+	"github.com/satori/go.uuid"
 )
 
 type StandardModel struct {
-	UUID string `json:"uuid" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	UUID uuid.UUID `json:"uuid" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 }

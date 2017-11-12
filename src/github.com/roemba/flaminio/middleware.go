@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"errors"
-	"log"
+	"github.com/satori/go.uuid"
 )
 
 func ValidateTokenMiddleware(c *gin.Context){
@@ -19,14 +19,14 @@ func ValidateTokenMiddleware(c *gin.Context){
 
 	if err == nil {
 		if claims, ok := token.Claims.(*jwt.StandardClaims); ok && token.Valid {
-			//Get user and store it in the context
-			var user User
-			var permissions []Permission
-			db.First(&user, User{StandardModel:StandardModel{UUID: claims.Subject}})
-			db.Model(&user).Related(&permissions, "Permissions")
-			user.Permissions = permissions
+			UUID, err := uuid.FromString(claims.Subject)
+			if err != nil {
+				c.AbortWithError(http.StatusUnauthorized, errors.New("error converting subject of token to uuid"))
+				fmt.Fprint(c.Writer, "Token integrity violated")
+			}
 
-			c.Set("user", user)
+			//Get user and store it in the context
+			c.Set("user", getUserWithPermissions(UUID))
 			c.Next()
 		} else {
 			c.AbortWithError(http.StatusUnauthorized, errors.New("token is not valid"))
