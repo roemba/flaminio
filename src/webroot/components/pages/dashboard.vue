@@ -19,7 +19,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.dashboard {
 		height: 100%;
 		background-color: #00A6D6;

@@ -58,6 +58,7 @@
 	"vue/name-property-casing": ["warn", "kebab-case"],
 	"vue/no-multi-spaces": "warn",
 	"vue/v-bind-style": "warn",
-	"vue/v-on-style": "warn"
+	"vue/v-on-style": "warn",
+	"vue/require-v-for-key": "off"
   }
 }

@@ -1,7 +1,7 @@
 <template>
 	<div class="wrapper d-flex flex-column">
 		<navbar class="up"></navbar>
-		<div v-if="$auth.ready()" class="down">
+		<div v-if="$auth.ready()" class="container-fluid down">
 			<router-view></router-view>
 		</div>
 		<p v-else>Loading...</p>
@@ -17,14 +17,17 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.wrapper {
 		height: 100%;
 	}
 
 	.down {
 		display: flex;
-		flex-grow: 1;
+		flex: 1;
+		min-height: 0;
+		background-color: #00A6D6;
+		padding: 15px;
 	}
 </style>
 
