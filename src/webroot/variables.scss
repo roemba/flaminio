@@ -1,0 +1,33 @@
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
+
+
+//Colors
+$f-blue-3: #0a2239;
+$f-grey-1: #4f5d75;
+$f-green-1: #132e32;
+$f-blue-1: #00a6d6;
+$f-blue-2: #176087;
+$f-red-1: #ef2b2b;
+
+//Sizes copied from Bootstrap 4.
+$f-grid-breakpoints: (
+        xs: 0,
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1200px
+);
+
+@mixin breakpoint($breakpoint) {
+  @if map-has-key($f-grid-breakpoints, $breakpoint) {
+    @media (min-width: #{map-get($f-grid-breakpoints, $breakpoint)}) {
+      @content;
+    }
+  }
+
+  @else {
+    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+        + "Please make sure it is defined in `$f-grid-breakpoints` map.";
+  }
+}

@@ -89,12 +89,13 @@ export default {
 		align-items: center;
 		width: 100%;
 		height: 100%;
+		background-color: $f-green-1;
 	}
 
 	.container {
 		max-width: 540px;
 		padding: 15px;
-		background-color: #00A6D6;
+		background-color: $f-blue-1;
 	}
 
 	.invalid-feedback {
@@ -102,6 +103,6 @@ export default {
 	}
 
 	.incorrect-password {
-		background-color: #ef2b2b;
+		background-color: $f-red-1;
 	}
 </style>

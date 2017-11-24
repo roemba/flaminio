@@ -1,7 +1,7 @@
 <template>
 	<div class="wrapper d-flex flex-column">
 		<navbar class="up"></navbar>
-		<div v-if="$auth.ready()" class="container-fluid down">
+		<div v-if="$auth.ready()" :style="{'background-color': $store.state.viewportBackgroundColor}" class="container-fluid down">
 			<router-view></router-view>
 		</div>
 		<p v-else>Loading...</p>
@@ -26,8 +26,7 @@ export default {
 		display: flex;
 		flex: 1;
 		min-height: 0;
-		background-color: #00A6D6;
-		padding: 15px;
+		padding: 0;
 	}
 </style>
 
@@ -40,6 +39,10 @@ export default {
 
 	html, body {
 		height:100%;
+	}
+
+	.container-fluid {
+		padding: 15px;
 	}
 </style>
 

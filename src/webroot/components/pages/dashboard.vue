@@ -1,6 +1,6 @@
 <template>
 	<div class="container-fluid dashboard">
-		<p>You are now viewing the dashboard</p>
+		<p>You are now viewing the dashboard {{moment.weekdays()}}</p>
 	</div>
 </template>
 
@@ -22,6 +22,6 @@ export default {
 <style lang="scss" scoped>
 	.dashboard {
 		height: 100%;
-		background-color: #00A6D6;
+		background-color: $f-blue-1;
 	}
 </style>

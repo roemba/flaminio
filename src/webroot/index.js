@@ -7,6 +7,7 @@ import router from "./routes";
 
 import "popper.js";
 import "bootstrap";
+import moment from "moment";
 Vue.use(VueResource);
 Vue.http.options.root = "/api/v1";
 Vue.router = router;
@@ -20,6 +21,31 @@ Vue.use(VueAuth, {
 Vue.auth.options.rolesVar = "role";
 Vue.auth.options.logoutData.redirect = "/login";
 
+function findScrollbarWidth() {
+	let scrollDiv = document.createElement("div");
+	scrollDiv.style.cssText = "width: 100px;" +
+		"height: 100px;" +
+		"overflow: scroll;" +
+		"position: absolute;" +
+		"top: -9999px;";
+	document.body.appendChild(scrollDiv);
+
+	// Get the scrollbar width
+	const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
+
+	// Delete the DIV
+	document.body.removeChild(scrollDiv);
+	return scrollbarWidth;
+}
+
+Vue.mixin({
+	data () {
+		return {
+			moment: moment,
+			scrollBarWidth: findScrollbarWidth()
+		};
+	}
+});
 
 new Vue({
 	el: "#app",

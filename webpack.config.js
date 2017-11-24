@@ -40,9 +40,10 @@ module.exports = {
 	plugins: [
 		new VueLoaderOptionsPlugin({
 			"sass-resources-loader": {
-				resources: ["./node_modules/bootstrap/scss/_functions.scss", "./node_modules/bootstrap/scss/_variables.scss"]
+				resources: ["./src/webroot/variables.scss"]
 			}
 		}),
+		new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /nl|en-gb|en-us/),
 		new webpack.ProvidePlugin({
 			$: "jquery",
 			jQuery: "jquery",

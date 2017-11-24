@@ -13,7 +13,8 @@ export default new Vuex.Store({
 	//getters,
 	mutations,
 	state: {
-		user: {}
+		user: {},
+		locale: "en-us"
 	},
 	strict: debug
 });

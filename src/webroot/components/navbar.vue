@@ -51,5 +51,6 @@ export default {
 <style lang="scss" scoped>
 	nav {
 		background-color: #0A2239;
+		z-index: 3;
 	}
 </style>
