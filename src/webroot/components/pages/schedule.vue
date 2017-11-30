@@ -8,17 +8,26 @@
 				{{day}}
 			</div>
 		</div>
-		<div class="flex-table">
-			<div class="flex-table-row time-row">
-				<div class="time-column"></div>
-				<div v-for="(day, index) in days" class="flex-table-row-item cell">
-
+		<div class="schedule-bottom-container">
+			<div class="schedule-time-container" ref="timeContainer">
+				<div class="schedule-time-container-inner">
+					<div v-for="(time, index) in times" class="schedule-time-container-inner-entry">
+						<span class="schedule-time-container-inner-entry-text">
+							{{time}}
+						</span>
+					</div>
 				</div>
 			</div>
-			<div v-for="(time,index) in times" class="flex-table-row time-row">
-				<div class="time-column"><label>{{time}}</label></div>
-				<div v-for="(day, index) in days" class="flex-table-row-item cell">
-
+			<div class="schedule-entry-container" @scroll="synchronizeScroll">
+				<div class="flex-table">
+					<div>
+						<div v-for="(time, index) in times" class="horizontal-divider"></div>
+					</div>
+					<div v-for="day in days" class="flex-table-column">
+						<div class="flex-table-column-holder">
+							<div class="entry-container rounded">Hallo!</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -36,6 +45,11 @@ export default {
 			times: []
 		};
 	},
+	methods: {
+		synchronizeScroll: function (event) {
+			this.$refs.timeContainer.scrollTop = event.target.scrollTop;
+		}
+	},
 	created: function () {
 		this.$store.commit(mutations.CHANGE_LOCALE,{locale: "nl"});
 		this.days = this.moment.weekdays();
@@ -46,104 +60,98 @@ export default {
 		for (currentTime; currentTime.isBefore(this.moment("23:31", "HH:mm")); currentTime.add(division, "minutes")) {
 			this.times.push(currentTime.format("HH:mm"));
 		}
-		this.times.shift();
-		console.log(this.times);
 	}
 };
 </script>
 
 <style lang="scss" scoped>
+	$row-height: 48px;
+
 	.schedule {
-		height:100%;
+		height: 100%;
 		background-color: $f-blue-1;
+
+		&-bottom-container {
+			overflow: hidden;
+			display: flex;
+			flex: 1 1 auto;
+			background-color: whitesmoke;
+			color: black;
+		}
+
+		&-time-container {
+			overflow-y: hidden;
+			flex: 0 0 auto;
+
+			&-inner {
+				position: relative;
+				border-right: black 1px solid;
+				display: inline-block;
+				min-width: 40px;
+				padding: 0 4px;
+				white-space: nowrap;
+
+				&-entry {
+					position: relative;
+					height: $row-height;
+					text-align: center;
+
+					&-text {
+						display: block;
+						position: relative;
+						top: -10px;
+						line-height: 1;
+					}
+
+					&:first-child > .schedule-time-container-inner-entry-text {
+						display: none;
+					}
+				}
+			}
+		}
+
+		&-entry-container {
+			width: 100%;
+			overflow-y: scroll;
+			overflow-x: auto;
+			flex: 1 1 auto;
+		}
 	}
 
 	.flex-table {
-
-		width: 100%;
-		overflow-y: auto;
-
 		display: flex;
-		flex-flow: column nowrap;
-		justify-content: space-between;
-
-		&-header {
-			display: none;
-		}
-
-		&-row {
-			width: 100%;
-			@include breakpoint(md) {
-				display: flex;
-				flex-flow: row nowrap;
-				flex-grow: 1;
-				flex-basis: 0;
-			}
-			&-item {
-				display: flex;
-				flex-flow: nowrap;
-				flex-grow: 1;
-				flex-basis: 0;
-				padding: 0.5em;
-
-			}
-		}
-	}
-
-	@mixin fix-flex() {
-		flex-grow: initial;
-		flex-basis: initial;
-	}
-
-
-	@for $i from 1 through 10 {
-		.flex-grow-#{$i} {
-			flex-grow: $i;
-		}
-	}
-
-	.date-header {
-		background-color: $f-grey-1;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.cell {
-		background-color: #f2f2f2;
-		justify-content: center;
-		align-items: center;
-		min-height: 50px;
-
-		border: 1px solid black;
-		&:not(:last-child){
-			margin-right: -1px;
-		}
-	}
-
-	.time-row {
-		&:not(:last-child){
-			margin-bottom: -1px;
-		}
-	}
-
-	.date-row {
-		height: 50px;
-		@include fix-flex();
-	}
-
-	.time-column {
 		position: relative;
-		width: 50px;
 
-		label {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			margin: 0;
-			transform: translateY(calc(-50% - 2px));
-			text-align: right;
+		&-column {
+			border-right: black 1px solid;
+			position: relative; //?
+			padding-right: 12px;
+			flex: 1 1 auto;
+
+			&-holder {
+				position: relative;
+				height: 100%;
+				width: 100%;
+			}
 		}
+	}
+
+	.horizontal-divider {
+		height: $row-height;
+
+		&::after {
+			content: '';
+			border-bottom: black 1px solid;
+			position: absolute;
+			width: 100%;
+			margin-top: -1px;
+			z-index: 2;
+		}
+	}
+
+	.entry-container {
+		position: absolute;
+		outline: none;
 	}
 
 </style>
