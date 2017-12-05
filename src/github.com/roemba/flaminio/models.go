@@ -11,6 +11,10 @@ type StandardModel struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
+type Enum interface {
+	getMap() map[string]uuid.UUID
+}
+
 type User struct {
 	StandardModel
 	FirstName string `json:"firstname" gorm:"size:255;not null"`
@@ -25,4 +29,30 @@ type Permission struct {
 	StandardModel
 	Name string `json:"name" gorm:"size:255;not null;unique"`
 	Users []User `json:"users" gorm:"many2many:user_permissions"`
+}
+
+type Location struct {
+	StandardModel
+	Name string `json:"name" gorm:"size:255;not null;unique"`
+}
+
+type Reservation struct {
+	StandardModel
+	Creator User
+	CreatorID uuid.UUID `gorm:"type:uuid"`
+
+}
+
+type Log struct {
+	StandardModel
+	User User
+	UserID uuid.UUID `gorm:"type:uuid"`
+	OperationType LogOperationType
+	OperationTypeID uuid.UUID `gorm:"type:uuid"`
+	Message string `json:"message" gorm:"type:text;"`
+}
+
+type LogOperationType struct {
+	StandardModel
+	Name string `json:"name" gorm:"size:255;not null;unique"`
 }

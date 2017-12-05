@@ -2,30 +2,39 @@
 	<div class="container-fluid schedule d-flex flex-column">
 		<h1>Schedules</h1>
 
-		<div class="flex-table-row flex-table-header date-row">
-			<div class="time-column"></div>
-			<div v-for="(day, index) in days" class="flex-table-row-item date-header">
-				{{day}}
+		<div class="schedule-container">
+			<div class="schedule-top-container">
+				<div class="schedule-top-container-time-container-offset"></div>
+				<div class="schedule-top-container-top-container-inner">
+					<div class="schedule-day-container-outer">
+						<div class="schedule-day-container-inner">
+							<div v-for="day in days" class="schedule-day">
+								{{day}}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="schedule-top-container-scrollbar-offset"></div>
 			</div>
-		</div>
-		<div class="schedule-bottom-container">
-			<div class="schedule-time-container" ref="timeContainer">
-				<div class="schedule-time-container-inner">
-					<div v-for="(time, index) in times" class="schedule-time-container-inner-entry">
+			<div class="schedule-bottom-container">
+				<div class="schedule-time-container" ref="timeContainer">
+					<div class="schedule-time-container-inner">
+						<div v-for="(time, index) in times" class="schedule-time-container-inner-entry">
 						<span class="schedule-time-container-inner-entry-text">
 							{{time}}
 						</span>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="schedule-entry-container" @scroll="synchronizeScroll">
-				<div class="flex-table">
-					<div>
-						<div v-for="(time, index) in times" class="horizontal-divider"></div>
-					</div>
-					<div v-for="day in days" class="flex-table-column">
-						<div class="flex-table-column-holder">
-							<div class="entry-container rounded">Hallo!</div>
+				<div class="schedule-entry-container" @scroll="synchronizeScroll">
+					<div class="flex-table">
+						<div>
+							<div v-for="(time, index) in times" class="horizontal-divider"></div>
+						</div>
+						<div v-for="day in days" class="flex-table-column">
+							<div class="flex-table-column-holder">
+								<div class="entry-container rounded">Hallo!</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -66,17 +75,73 @@ export default {
 
 <style lang="scss" scoped>
 	$row-height: 48px;
+	$time-column-width: 50px;
 
 	.schedule {
 		height: 100%;
 		background-color: $f-blue-1;
 
+		&-container {
+			background-color: whitesmoke;
+			color: black;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+		}
+
+		&-top-container {
+			display: flex;
+			flex: none;
+			border-bottom: black 1px solid;
+
+			&-time-container-offset {
+				display: flex;
+				flex: none;
+				flex-direction: column;
+				min-width: $time-column-width;
+			}
+
+			&-top-container-inner {
+				border-left: black 1px solid;
+				margin-left: -1px;
+				flex: 1 1 auto;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+			}
+
+			&-scrollbar-offset {
+				overflow: scroll;
+				visibility: hidden;
+				flex: none;
+			}
+		}
+		&-day {
+			border-right: black 1px solid;
+			overflow: hidden;
+			flex: 1 1 0;
+			display: flex;
+
+			&-container {
+				&-outer {
+					height: 80px;
+					display: flex;
+					flex: none;
+					overflow: hidden;
+				}
+				&-inner {
+					flex: 1 1 auto;
+					display: flex;
+					overflow: hidden;
+				}
+			}
+		}
+
 		&-bottom-container {
 			overflow: hidden;
 			display: flex;
-			flex: 1 1 auto;
-			background-color: whitesmoke;
-			color: black;
+			flex: 1 1 60%;
 		}
 
 		&-time-container {
@@ -87,7 +152,7 @@ export default {
 				position: relative;
 				border-right: black 1px solid;
 				display: inline-block;
-				min-width: 40px;
+				min-width: $time-column-width;
 				padding: 0 4px;
 				white-space: nowrap;
 

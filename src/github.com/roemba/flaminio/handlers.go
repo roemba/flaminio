@@ -77,16 +77,10 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
+	addDatabaseLog(user.UUID, getUUIDFromMapSafely("Authentication", logOperationTypeMap),"User logged in")
+
 	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
 }
-
-//func ProtectedHandler(c *gin.Context) {
-//	user := getUserFromContext(c)
-//
-//	log.Println(user.Email)
-//	response := Response{STATUS_SUCCESS,"Gained access to protected resource"}
-//	JsonResponse(response, c.Writer)
-//}
 
 func UserHandler(c *gin.Context) {
 	user := getUserFromContext(c)

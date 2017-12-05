@@ -17,7 +17,44 @@ func migrate() (err error) {
 	if err != nil {
 		return err
 	}
+
+	err = createLogAndOperationsTable()
+	if err != nil {
+		return err
+	}
 	log.Println("Finished migration")
+	return
+}
+
+func createLogAndOperationsTable() (err error) {
+	db.AutoMigrate(&LogOperationType{}, &Log{})
+	db.Model(&Log{}).AddForeignKey("operation_type_id", "log_operation_types(uuid)", "RESTRICT", "CASCADE")
+	db.Model(&Log{}).AddForeignKey("user_id", "users(uuid)", "CASCADE", "CASCADE")
+
+	var operationTypesArray = []LogOperationType {
+		{
+			Name: "Changed",
+		},
+		{
+			Name: "Deleted",
+		},
+		{
+			Name: "Added",
+		},
+		{
+			Name: "Moved",
+		},
+		{
+			Name: "Authentication",
+		},
+	}
+
+	for i, e := range operationTypesArray {
+		var operationType LogOperationType
+		db.FirstOrCreate(&operationType, e)
+		operationTypesArray[i] = operationType
+	}
+
 	return
 }
 
@@ -36,6 +73,10 @@ func createUsersTable() (err error) {
 
 func createPermissionsTable() (err error) {
 	db.AutoMigrate(&Permission{})
+	db.Exec("ALTER TABLE user_permissions ADD CONSTRAINT user_foreign_key FOREIGN KEY (user_uuid) " +
+		"REFERENCES users (uuid) ON DELETE CASCADE ON UPDATE CASCADE;")
+	db.Exec("ALTER TABLE user_permissions ADD CONSTRAINT permission_foreign_key FOREIGN KEY (permission_uuid) " +
+		"REFERENCES permissions (uuid) ON DELETE CASCADE ON UPDATE CASCADE;")
 
 	var permissionArray = []Permission {
 		{

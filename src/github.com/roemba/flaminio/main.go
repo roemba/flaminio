@@ -43,6 +43,7 @@ func connectToDatabase(){
 func Main() {
 	initKeys()
 	connectToDatabase()
+	getEnums()
 	startServer()
 }
 
