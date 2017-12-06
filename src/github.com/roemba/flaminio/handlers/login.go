@@ -1,31 +1,19 @@
-package flaminio
+package handlers
 
 import (
+	"github.com/gin-gonic/gin"
+	"net/http"
 	"fmt"
+	"github.com/roemba/flaminio/database"
+	"github.com/roemba/flaminio/utility"
+	"encoding/json"
+	"errors"
+	"github.com/roemba/flaminio/models"
 	"github.com/dgrijalva/jwt-go"
 	"time"
-	"net/http"
-	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"errors"
 )
 
-const (
-	STATUS_SUCCESS = "success"
-	STATUS_FAIL = "failed"
-)
-
-type UserCredentials struct {
-	Email string `json:"email"`
-	Password string `json:"password"`
-}
-
-type Response struct {
-	Status string `json:"status"`
-	Data interface{} `json:"data"`
-}
-
-func createNewToken(user User, c *gin.Context) (tokenString string) {
+func createNewToken(user models.User, c *gin.Context) (tokenString string) {
 	token := jwt.New(jwt.SigningMethodRS256)
 	claims := jwt.StandardClaims {
 		ExpiresAt: time.Now().Add(time.Hour * 10).Unix(), //10 hours from now
@@ -36,29 +24,22 @@ func createNewToken(user User, c *gin.Context) (tokenString string) {
 
 	token.Claims = claims
 
-	tokenString, err := token.SignedString(signKey)
+	tokenString, err := token.SignedString(utility.SignKey)
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("error while signing the token"))
 		fmt.Fprintln(c.Writer, "Error while signing the token")
-		fatal(err)
+		utility.Fatal(err)
 		return
 	}
 
 	return tokenString
 }
 
-func getUserFromContext(c *gin.Context) (user User) {
-	value, exists := c.Get("user")
-	if !exists {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
-		fmt.Fprintln(c.Writer, "Error extracting the key")
-		fatal(errors.New("could not load user from context"))
-		return
-	}
-	return value.(User)
+type UserCredentials struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
 }
-
 func LoginHandler(c *gin.Context) {
 	var userInput UserCredentials
 
@@ -70,22 +51,16 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, recordNotFound := getUser(userInput.Email)
-	if recordNotFound || !checkPasswordHash(userInput.Password, user.Password) {
+	user, recordNotFound := database.GetUser(userInput.Email)
+	if recordNotFound || !utility.CheckPasswordHash(userInput.Password, user.Password) {
 		c.AbortWithError(http.StatusForbidden, errors.New("error logging in"))
 		fmt.Fprint(c.Writer, "Invalid credentials")
 		return
 	}
 
-	addDatabaseLog(user.UUID, getUUIDFromMapSafely("Authentication", logOperationTypeMap),"User logged in")
+	database.AddDatabaseLog(user.UUID, utility.GetUUIDFromMapSafely("Authentication", database.LogOperationTypeMap),"User logged in")
 
 	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
-}
-
-func UserHandler(c *gin.Context) {
-	user := getUserFromContext(c)
-
-	JsonResponse(Response{STATUS_SUCCESS,user}, c.Writer)
 }
 
 func RefreshHandler(c *gin.Context) {

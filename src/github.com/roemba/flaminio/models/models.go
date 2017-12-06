@@ -1,4 +1,4 @@
-package flaminio
+package models
 
 import (
 	"time"
@@ -9,10 +9,6 @@ type StandardModel struct {
 	UUID uuid.UUID `json:"uuid" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
-}
-
-type Enum interface {
-	getMap() map[string]uuid.UUID
 }
 
 type User struct {
@@ -34,21 +30,40 @@ type Permission struct {
 type Location struct {
 	StandardModel
 	Name string `json:"name" gorm:"size:255;not null;unique"`
+	Description string `json:"description" gorm:"type:text;"`
+}
+
+type Sequence struct {
+	StandardModel
+	Meta Metadata
+	MetaID uuid.UUID `gorm:"type:uuid;not null"`
+}
+
+type Metadata struct {
+	StandardModel
+	Name string `json:"name" gorm:"size:255;not null;"`
+	Description string `json:"description" gorm:"type:text;"`
 }
 
 type Reservation struct {
 	StandardModel
-	Creator User
-	CreatorID uuid.UUID `gorm:"type:uuid"`
-
+	Creator User `json:"-"`
+	CreatorID uuid.UUID `json:"creator-id" gorm:"type:uuid;not null"`
+	Location Location `json:"-"`
+	LocationID uuid.UUID `json:"location-id" gorm:"type:uuid;not null;"`
+	Sequence Sequence `json:"-"`
+	SequenceID uuid.NullUUID `json:"sequence-id" gorm:"type:uuid;"`
+	Meta Metadata `json:"-"`
+	MetaID uuid.UUID `json:"-" gorm:"type:uuid;not null;"`
+	DateAndTime time.Time `json:"date" gorm:"type:timestamp;not null;"`
 }
 
 type Log struct {
 	StandardModel
 	User User
-	UserID uuid.UUID `gorm:"type:uuid"`
+	UserID uuid.UUID `gorm:"type:uuid;not null"`
 	OperationType LogOperationType
-	OperationTypeID uuid.UUID `gorm:"type:uuid"`
+	OperationTypeID uuid.UUID `gorm:"type:uuid;not null"`
 	Message string `json:"message" gorm:"type:text;"`
 }
 

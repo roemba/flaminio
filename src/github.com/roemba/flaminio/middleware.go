@@ -8,13 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"errors"
 	"github.com/satori/go.uuid"
+	"github.com/roemba/flaminio/database"
+	"github.com/roemba/flaminio/utility"
 )
 
-func ValidateTokenMiddleware(c *gin.Context){
+func validateTokenMiddleware(c *gin.Context){
 
 	token, err := request.ParseFromRequestWithClaims(c.Request, request.AuthorizationHeaderExtractor, &jwt.StandardClaims{},
 		func(token *jwt.Token) (interface{}, error) {
-			return verifyKey, nil
+			return utility.VerifyKey, nil
 		})
 
 	if err == nil {
@@ -26,7 +28,7 @@ func ValidateTokenMiddleware(c *gin.Context){
 			}
 
 			//Get user and store it in the context
-			c.Set("user", getUserWithPermissions(UUID))
+			c.Set("user", database.GetUserWithPermissions(UUID))
 			c.Next()
 		} else {
 			c.AbortWithError(http.StatusUnauthorized, errors.New("token is not valid"))
