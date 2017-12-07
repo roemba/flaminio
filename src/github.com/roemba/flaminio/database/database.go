@@ -62,12 +62,12 @@ func GetLogOperationsArray(v *[]models.LogOperationType) (err error) {
 }
 
 func GetReservationsByDate(date time.Time, v *[]models.Reservation) (err error) {
-	err = db.Where("date = ?", date).Find(&v).Error
+	err = db.Where("date_and_time::date = ?", date.Format(utility.ISO8601DATE)).Find(&v).Error
 	return
 }
 
 func GetReservationsByDateAndLocation(date time.Time, locationStringArray []string, v *[]models.Reservation) (err error) {
-	err = db.Where("date = ? AND uuid in (?)", date, locationStringArray).Find(&v).Error
+	err = db.Where("date_and_time::date = ? AND location_id in (?)", date.Format(utility.ISO8601DATE), locationStringArray).Find(&v).Error
 	return
 }
 

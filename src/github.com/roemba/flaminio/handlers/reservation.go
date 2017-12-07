@@ -10,6 +10,7 @@ import (
 	"time"
 	"encoding/json"
 	"errors"
+	"github.com/roemba/flaminio/utility"
 )
 
 func GETReservationsHandler(c *gin.Context) {
@@ -29,7 +30,7 @@ func GETReservationsHandler(c *gin.Context) {
 	if dateString, exists := c.GetQuery("date"); !exists {
 		date = time.Now()
 	} else {
-		date, err = time.Parse(defaultDataFormat, dateString)
+		date, err = time.Parse(utility.ISO8601DATE, dateString)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, errors.New("error in request"))
 			fmt.Fprint(c.Writer, "Error in request")
@@ -56,11 +57,11 @@ func PUTReservationsHandler(c *gin.Context) {
 	}
 
 	type putReservationsBody struct {
-		Name string `json:"name"`
-		Description string `json:"description"`
-		DateAndTime customDateAndTimeFormat `json:"date_and_time"`
-		LocationID uuid.UUID `json:"location_id"`
-		SequenceID uuid.UUID `json:"sequence_id"`
+		Name        string                   `json:"name"`
+		Description string                   `json:"description"`
+		DateAndTime models.CustomDateAndTime `json:"date_and_time"`
+		LocationID  uuid.UUID                `json:"location_id"`
+		SequenceID  uuid.UUID                `json:"sequence_id"`
 	}
 
 	var userInput putReservationsBody
@@ -83,7 +84,7 @@ func PUTReservationsHandler(c *gin.Context) {
 		CreatorID:   user.UUID,
 		LocationID:  userInput.LocationID,
 		SequenceID:  toNullUUID(userInput.SequenceID),
-		DateAndTime: userInput.DateAndTime.Time,
+		DateAndTime: userInput.DateAndTime,
 		MetaID:      metadata.UUID,
 	}
 

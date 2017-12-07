@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"time"
 	"net/http"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -14,30 +13,13 @@ import (
 )
 
 const (
-	STATUS_SUCCESS = "success"
-	STATUS_FAIL = "failed"
-	defaultDataFormat        = "02-01-2006"
-	defaultDateAndTimeFormat = "02-01-2006 15:04:05"
+	STATUS_SUCCESS   = "success"
+	STATUS_FAIL      = "failed"
 )
 
 type Response struct {
 	Status string `json:"status"`
 	Data interface{} `json:"data"`
-}
-
-type customDateAndTimeFormat struct {
-	time.Time
-}
-
-func (c *customDateAndTimeFormat) UnmarshalJSON(j []byte) (err error) {
-	s := string(j)
-	s = s[1:len(s)-1]
-	t, err := time.Parse(defaultDateAndTimeFormat, s)
-	if err != nil {
-		return err
-	}
-	c.Time = t
-	return
 }
 
 func jsonResponse(response interface{}, w http.ResponseWriter) {

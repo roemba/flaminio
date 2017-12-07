@@ -6,6 +6,11 @@ import (
 	"errors"
 )
 
+const (
+	ISO8601DATE      = "2006-01-02"
+	ISO8601DATE_TIME = "2006-01-02 15:04:05"
+)
+
 func Fatal(err error) {
 	if err != nil {
 		log.Fatal(err)
