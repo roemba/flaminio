@@ -5,6 +5,7 @@ import (
 	"github.com/satori/go.uuid"
 	"github.com/roemba/flaminio/utility"
 	"encoding/json"
+	"database/sql"
 )
 
 //Basic models
@@ -37,7 +38,7 @@ func (c CustomDateAndTime) MarshalJSON() ([]byte, error) {
 type User struct {
 	StandardModel
 	FirstName string `json:"firstname" gorm:"size:255;not null"`
-	MiddleName string `json:"middlename" gorm:"size:255"`
+	MiddleName sql.NullString `json:"middlename" gorm:"size:255"`
 	LastName string `json:"lastname" gorm:"size:255;not null"`
 	Password string `json:"-" gorm:"type:bytea;not null"`
 	Email string `json:"email" gorm:"type:citext;not null;unique_index"`

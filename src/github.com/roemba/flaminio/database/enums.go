@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/satori/go.uuid"
-	"github.com/roemba/flaminio/models"
+	"github.com/roemba/flaminio/utility"
 )
 
 func GetEnums(){
@@ -12,8 +12,8 @@ func GetEnums(){
 
 var PermissionsMap map[string]uuid.UUID
 func getPermissionMap() (permissionMap map[string]uuid.UUID) {
-	var permissionArray []models.Permission
-	GetPermissionArray(&permissionArray)
+	permissionArray, err := GetPermissionArray()
+	utility.Fatal(err)
 
 	permissionMap = make(map[string]uuid.UUID)
 	for _, e := range permissionArray {
@@ -24,8 +24,8 @@ func getPermissionMap() (permissionMap map[string]uuid.UUID) {
 
 var LogOperationTypeMap map[string]uuid.UUID
 func getLogOperationMap() (logOperationTypeMap map[string]uuid.UUID) {
-	var operationsArray []models.LogOperationType
-	GetLogOperationsArray(&operationsArray)
+	operationsArray, err := GetLogOperationsArray()
+	utility.Fatal(err)
 
 	logOperationTypeMap = make(map[string]uuid.UUID)
 	for _, e := range operationsArray {

@@ -10,6 +10,7 @@ import (
 	"github.com/satori/go.uuid"
 	"github.com/roemba/flaminio/database"
 	"github.com/roemba/flaminio/utility"
+	"github.com/roemba/flaminio/models"
 )
 
 func validateTokenMiddleware(c *gin.Context){
@@ -28,7 +29,17 @@ func validateTokenMiddleware(c *gin.Context){
 			}
 
 			//Get user and store it in the context
-			c.Set("user", database.GetUserWithPermissions(UUID))
+			var user = models.User{
+				StandardModel: models.StandardModel{
+					UUID: UUID,
+				},
+			}
+			user, err = database.GetUserByUUID(user)
+			utility.Fatal(err)
+			user, err = database.GetPermissionsForUser(user)
+			utility.Fatal(err)
+
+			c.Set("user", user)
 			c.Next()
 		} else {
 			c.AbortWithError(http.StatusUnauthorized, errors.New("token is not valid"))

@@ -11,6 +11,7 @@ import (
 	"github.com/roemba/flaminio/models"
 	"github.com/dgrijalva/jwt-go"
 	"time"
+	"database/sql"
 )
 
 func createNewToken(user models.User, c *gin.Context) (tokenString string) {
@@ -51,8 +52,12 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, recordNotFound := database.GetUser(userInput.Email)
-	if recordNotFound || !utility.CheckPasswordHash(userInput.Password, user.Password) {
+	user, err := database.GetUserByEmail(userInput.Email)
+	if err != sql.ErrNoRows {
+		utility.Fatal(err)
+	}
+
+	if err == sql.ErrNoRows || !utility.CheckPasswordHash(userInput.Password, user.Password) {
 		c.AbortWithError(http.StatusForbidden, errors.New("error logging in"))
 		fmt.Fprint(c.Writer, "Invalid credentials")
 		return
