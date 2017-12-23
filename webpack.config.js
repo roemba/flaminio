@@ -40,7 +40,7 @@ module.exports = {
 	plugins: [
 		new VueLoaderOptionsPlugin({
 			"sass-resources-loader": {
-				resources: ["./src/webroot/variables.scss"]
+				resources: ["./src/flaminio/webroot/variables.scss"]
 			}
 		}),
 		new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /nl|en-gb|en-us/),

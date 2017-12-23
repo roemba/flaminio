@@ -1,0 +1,120 @@
+{
+	"ImportPath": "flaminio",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/dgrijalva/jwt-go",
+			"Comment": "v3.1.0",
+			"Rev": "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+		},
+		{
+			"ImportPath": "github.com/dgrijalva/jwt-go/request",
+			"Comment": "v3.1.0",
+			"Rev": "dbeaa9332f19a944acb5736b4456cfcc02140e29"
+		},
+		{
+			"ImportPath": "github.com/gin-contrib/sse",
+			"Rev": "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
+		},
+		{
+			"ImportPath": "github.com/gin-contrib/static",
+			"Rev": "e6b7eb92648d0a5faeea81700668a7a5dbe8424f"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin",
+			"Comment": "v1.2-137-ga816f9e",
+			"Rev": "a816f9e9dbf820d7d01e8d363539da976fb8aa40"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/binding",
+			"Comment": "v1.2-137-ga816f9e",
+			"Rev": "a816f9e9dbf820d7d01e8d363539da976fb8aa40"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/json",
+			"Comment": "v1.2-137-ga816f9e",
+			"Rev": "a816f9e9dbf820d7d01e8d363539da976fb8aa40"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin/render",
+			"Comment": "v1.2-137-ga816f9e",
+			"Rev": "a816f9e9dbf820d7d01e8d363539da976fb8aa40"
+		},
+		{
+			"ImportPath": "github.com/golang/protobuf/proto",
+			"Rev": "1e59b77b52bf8e4b449a57e6f79f21226d571845"
+		},
+		{
+			"ImportPath": "github.com/jinzhu/gorm/dialects/postgres",
+			"Comment": "v1.0-176-g0a51f6c",
+			"Rev": "0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e"
+		},
+		{
+			"ImportPath": "github.com/jmoiron/sqlx",
+			"Comment": "sqlx-v1.1-130-gde86474",
+			"Rev": "de8647470aafe4854c976707c431dbe1eb2822c6"
+		},
+		{
+			"ImportPath": "github.com/jmoiron/sqlx/reflectx",
+			"Comment": "sqlx-v1.1-130-gde86474",
+			"Rev": "de8647470aafe4854c976707c431dbe1eb2822c6"
+		},
+		{
+			"ImportPath": "github.com/json-iterator/go",
+			"Comment": "1.0.4-14-g96fcb84",
+			"Rev": "96fcb84835b0447f3de9d7addb313c5487071533"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-195-g83612a5",
+			"Rev": "83612a56d3dd153a94a629cd64925371c9adad78"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/hstore",
+			"Comment": "go1.0-cutoff-195-g83612a5",
+			"Rev": "83612a56d3dd153a94a629cd64925371c9adad78"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "go1.0-cutoff-195-g83612a5",
+			"Rev": "83612a56d3dd153a94a629cd64925371c9adad78"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Comment": "v0.0.3-7-g6ca4dbf",
+			"Rev": "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
+		},
+		{
+			"ImportPath": "github.com/satori/go.uuid",
+			"Comment": "v1.1.0-8-g5bf94b6",
+			"Rev": "5bf94b69c6b68ee1b541973bb8e1144db23a194b"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Comment": "v.1.1-beta-7-g0e0d6e8",
+			"Rev": "0e0d6e869525973a9b36093f6ddc9d91b9fc2d71"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/bcrypt",
+			"Rev": "d585fd2cc9195196078f516b69daff6744ef5e84"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/blowfish",
+			"Rev": "d585fd2cc9195196078f516b69daff6744ef5e84"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "83801418e1b59fb1880e363299581ee543af32ca"
+		},
+		{
+			"ImportPath": "gopkg.in/go-playground/validator.v8",
+			"Comment": "v8.18.2",
+			"Rev": "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
+		}
+	]
+}

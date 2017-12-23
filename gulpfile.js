@@ -5,7 +5,7 @@ const webpackStream = require("webpack-stream");
 const runSequence = require("run-sequence");
 const eslint = require("gulp-eslint");
 
-const WEBROOT = "src/webroot";
+const WEBROOT = "src/flaminio/webroot";
 const JAVASCRIPT_AND_VUE_SOURCES = `${WEBROOT}/**/*.{js,vue}`;
 
 const DIST_FOLDER = "public";

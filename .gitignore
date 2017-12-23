@@ -145,3 +145,8 @@ typings/
 
 # End of https://www.gitignore.io/api/go,node,intellij
 public/
+pkg/
+bin/
+src/flaminio/vendor/
+src/github.com/
+src/golang.org/

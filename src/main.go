@@ -1,6 +1,6 @@
 package main
 
-import "github.com/roemba/flaminio"
+import "flaminio"
 
 
 func main() {
