@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flaminio/utility"
+	"database/sql"
 )
 
 func GETReservationsHandler(c *gin.Context) {
@@ -41,7 +42,13 @@ func GETReservationsHandler(c *gin.Context) {
 	if locationStringArray, exists := c.GetQueryArray("location"); exists {
 		database.GetReservationsByDateAndLocation(date, locationStringArray, &reservations)
 	} else {
-		database.GetReservationsByDate(date, &reservations)
+		reservations, err = database.GetReservationsByDate(date)
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error in getting reservations: " + err.Error()))
+		fmt.Fprint(c.Writer, "Error in getting reservations")
+		return
 	}
 
 	jsonResponse(Response{STATUS_SUCCESS, reservations}, c.Writer)
@@ -59,41 +66,38 @@ func PUTReservationsHandler(c *gin.Context) {
 	type putReservationsBody struct {
 		Name        string                   `json:"name"`
 		Description string                   `json:"description"`
-		DateAndTime models.CustomDateAndTime `json:"date_and_time"`
+		StartTimestamp models.CustomDateAndTime `json:"start"`
+		EndTimestamp models.CustomDateAndTime `json:"end"`
 		LocationID  uuid.UUID                `json:"location_id"`
 		SequenceID  uuid.UUID                `json:"sequence_id"`
 	}
 
 	var userInput putReservationsBody
+	//TODO Use disallowunknownfields once GO 1.10 is released
 	err := json.NewDecoder(c.Request.Body).Decode(&userInput)
 
-	if err != nil || userInput.LocationID == uuid.Nil {
+	if err != nil || userInput.Name == "" || userInput.Description == "" || userInput.LocationID == uuid.Nil {
 		c.AbortWithError(http.StatusBadRequest, errors.New("error in request"))
 		fmt.Fprint(c.Writer, "Error in request")
 		return
 	}
 
-	metadata := models.Metadata {
+	reservation := models.Reservation {
 		Name: userInput.Name,
 		Description: userInput.Description,
-	}
-
-	err = database.CreateMetaData(&metadata)
-
-	reservation := models.Reservation {
 		CreatorID:   user.UUID,
 		LocationID:  userInput.LocationID,
 		SequenceID:  toNullUUID(userInput.SequenceID),
-		DateAndTime: userInput.DateAndTime,
-		MetaID:      metadata.UUID,
+		StartTimestamp: userInput.StartTimestamp,
+		EndTimestamp: userInput.EndTimestamp,
 	}
 
-	err = database.CreateReservation(&reservation)
+	reservationUUID, err := database.CreateReservation(&reservation)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error while creating a reservation"))
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error while creating a reservation: " + err.Error()))
 		fmt.Fprint(c.Writer, "Error while creating reservation")
 		return
 	}
 
-	jsonResponse(Response{STATUS_SUCCESS, reservation}, c.Writer)
+	jsonResponse(Response{STATUS_SUCCESS, struct {uuid uuid.UUID}{reservationUUID}}, c.Writer)
 }

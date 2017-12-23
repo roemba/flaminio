@@ -10,7 +10,7 @@ import (
 
 //Basic models
 type StandardModel struct {
-	UUID uuid.UUID `json:"uuid" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	UUID uuid.UUID `json:"uuid"`
 	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time `json:"-"`
 }
@@ -37,62 +37,57 @@ func (c CustomDateAndTime) MarshalJSON() ([]byte, error) {
 //Functional models
 type User struct {
 	StandardModel
-	FirstName string `json:"firstname" gorm:"size:255;not null"`
-	MiddleName sql.NullString `json:"middlename" gorm:"size:255"`
-	LastName string `json:"lastname" gorm:"size:255;not null"`
-	Password string `json:"-" gorm:"type:bytea;not null"`
-	Email string `json:"email" gorm:"type:citext;not null;unique_index"`
-	Permissions []Permission `json:"permissions" gorm:"many2many:user_permissions"`
+	FirstName string `json:"firstname"`
+	MiddleName sql.NullString `json:"middlename"`
+	LastName string `json:"lastname"`
+	Password string `json:"-"`
+	Email string `json:"email"`
+	Permissions []Permission `json:"permissions"`
 }
 
 type Permission struct {
 	StandardModel
-	Name string `json:"name" gorm:"size:255;not null;unique"`
-	Users []User `json:"users" gorm:"many2many:user_permissions"`
+	Name string `json:"name"`
+	Users []User `json:"users"`
 }
 
 type Location struct {
 	StandardModel
-	Name string `json:"name" gorm:"size:255;not null;unique"`
-	Description string `json:"description" gorm:"type:text;"`
+	Name string `json:"name"`
+	Description string `json:"description"`
 }
 
 type Sequence struct {
 	StandardModel
-	Meta Metadata
-	MetaID uuid.UUID `gorm:"type:uuid;not null"`
-}
-
-type Metadata struct {
-	StandardModel
-	Name string `json:"name" gorm:"size:255;not null;"`
-	Description string `json:"description" gorm:"type:text;"`
+	Name string `json:"name"`
+	Description string `json:"description"`
 }
 
 //TODO: Fix CustomDateAndTime not working in Database
 type Reservation struct {
 	StandardModel
+	Name string `json:"name"`
+	Description string `json:"description"`
 	Creator     User              `json:"-"`
-	CreatorID   uuid.UUID         `json:"creator-id" gorm:"type:uuid;not null"`
+	CreatorID   uuid.UUID         `json:"creator-id"`
 	Location    Location          `json:"-"`
-	LocationID  uuid.UUID         `json:"location-id" gorm:"type:uuid;not null;"`
+	LocationID  uuid.UUID         `json:"location-id"`
 	Sequence    Sequence          `json:"-"`
-	SequenceID  uuid.NullUUID     `json:"sequence-id" gorm:"type:uuid;"`
-	Meta        Metadata          `json:"-"`
-	MetaID      uuid.UUID         `json:"-" gorm:"type:uuid;not null;"`
-	DateAndTime CustomDateAndTime `json:"date" gorm:"type:timestamp;not null;"`
+	SequenceID  uuid.NullUUID     `json:"sequence-id"`
+	StartTimestamp CustomDateAndTime `json:"start"`
+	EndTimestamp CustomDateAndTime `json:"end"`
 }
 
 type Log struct {
 	StandardModel
 	User User
-	UserID uuid.UUID `gorm:"type:uuid;not null"`
+	UserID uuid.UUID
 	OperationType LogOperationType
-	OperationTypeID uuid.UUID `gorm:"type:uuid;not null"`
-	Message string `json:"message" gorm:"type:text;"`
+	OperationTypeID uuid.UUID
+	Message string `json:"message"`
 }
 
 type LogOperationType struct {
 	StandardModel
-	Name string `json:"name" gorm:"size:255;not null;unique"`
+	Name string `json:"name"`
 }

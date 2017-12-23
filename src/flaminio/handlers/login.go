@@ -28,7 +28,7 @@ func createNewToken(user models.User, c *gin.Context) (tokenString string) {
 	tokenString, err := token.SignedString(utility.SignKey)
 
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error while signing the token"))
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error while signing the token: " + err.Error()))
 		fmt.Fprintln(c.Writer, "Error while signing the token")
 		utility.Fatal(err)
 		return

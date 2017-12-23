@@ -10,6 +10,7 @@ import (
 	"flaminio/database"
 	"flaminio/models"
 	"flaminio/utility"
+	"github.com/lib/pq"
 )
 
 const (
@@ -64,6 +65,14 @@ func checkPermission(user models.User, permissionKey string) (hasPermission bool
 		if e.UUID == permissionUUID {
 			return true
 		}
+	}
+	return false
+}
+
+func isUniqueViolation(err error) (bool){
+	const UNIQUE_VIOLATION_CODE = "23505"
+	if err, ok := err.(*pq.Error); ok && string(err.Code) == UNIQUE_VIOLATION_CODE {
+		return true
 	}
 	return false
 }

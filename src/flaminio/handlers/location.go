@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"flaminio/models"
 	"flaminio/database"
+	"github.com/satori/go.uuid"
 )
 
 func PUTLocationsHandler(c *gin.Context) {
@@ -38,7 +39,22 @@ func PUTLocationsHandler(c *gin.Context) {
 		Description: userInput.Description,
 	}
 
-	database.CreateLocation(&location)
+	locationUUID, err := database.CreateLocation(&location)
+	if err != nil{
+		if isUniqueViolation(err) {
+			c.AbortWithError(http.StatusBadRequest, errors.New("location name already exists"))
+			fmt.Fprint(c.Writer, "Location name already exists")
+			return
+		}
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error in getting reservations: " + err.Error()))
+		fmt.Fprint(c.Writer, "Error in getting reservations")
+		return
+	}
 
-	jsonResponse(Response{STATUS_SUCCESS, location}, c.Writer)
+	response := struct {
+		UUID uuid.UUID `json:"uuid"`
+	}{
+		UUID: locationUUID,
+	}
+	jsonResponse(Response{STATUS_SUCCESS, response}, c.Writer)
 }

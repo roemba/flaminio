@@ -9,8 +9,8 @@ import (
 )
 
 const standardModel = `uuid uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-					createdAt timestamptz NOT NULL DEFAULT NOW(),
-					updatedAt timestamptz NOT NULL DEFAULT NOW(),`
+					createdAt timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
+					updatedAt timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),`
 
 func fatal(err error, tx *sql.Tx) {
 	if err != nil {
@@ -41,11 +41,6 @@ func migrate() (err error) {
 	}
 
 	err = createLocationsTable()
-	if err != nil {
-		return err
-	}
-
-	err = createMetaDataTable()
 	if err != nil {
 		return err
 	}
@@ -217,19 +212,11 @@ func createLocationsTable() (err error) {
 	return err
 }
 
-func createMetaDataTable() (err error) {
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS flaminio.metadata (
-					` + standardModel + `
-					name character varying(255) NOT NULL,
-					description text
-				)`)
-	return err
-}
-
 func createSequenceTable() (err error) {
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS flaminio.sequences (
 					` + standardModel + `
-					metaId uuid NOT NULL REFERENCES flaminio.metadata ON DELETE RESTRICT ON UPDATE CASCADE
+					name character varying(255) NOT NULL UNIQUE,
+					description text
 				)`)
 	return err
 }
@@ -237,12 +224,13 @@ func createSequenceTable() (err error) {
 func createReservationsTable() (err error) {
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS flaminio.reservations (
 					` + standardModel + `
+					name character varying(255) NOT NULL UNIQUE,
+					description text,
 					creatorId uuid NOT NULL REFERENCES flaminio.users ON DELETE RESTRICT ON UPDATE CASCADE,
 					locationId uuid NOT NULL REFERENCES flaminio.locations ON DELETE CASCADE ON UPDATE CASCADE,
 					sequenceId uuid REFERENCES flaminio.sequences ON DELETE CASCADE ON UPDATE CASCADE,
-					metaId uuid NOT NULL REFERENCES flaminio.metadata ON DELETE RESTRICT ON UPDATE CASCADE,
-					startTimestamp timestamptz NOT NULL,
-					endTimestamp timestamptz NOT NULL
+					startTimestamp timestamp NOT NULL,
+					endTimestamp timestamp NOT NULL
 				)`)
 	return err
 }
