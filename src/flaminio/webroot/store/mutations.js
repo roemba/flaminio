@@ -10,6 +10,10 @@ export default {
 	[types.CHANGE_LOCALE](state, payload) {
 		moment.locale(payload.locale);
 		state.locale = payload.locale;
+	},
+
+	[types.UPDATE_LOCATIONS](state, payload) {
+		state.locations = payload.locations;
 	}
 
 };

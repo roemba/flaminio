@@ -6,10 +6,10 @@
 			<div class="schedule-top-container">
 				<div class="schedule-top-container-time-container-offset"></div>
 				<div class="schedule-top-container-top-container-inner">
-					<div class="schedule-day-container-outer">
-						<div class="schedule-day-container-inner">
-							<div v-for="day in days" class="schedule-day">
-								{{day}}
+					<div class="schedule-location-container-outer">
+						<div class="schedule-location-container-inner">
+							<div v-for="location in locations" class="schedule-location">
+								{{location.name}}
 							</div>
 						</div>
 					</div>
@@ -31,7 +31,7 @@
 						<div>
 							<div v-for="(time, index) in times" class="horizontal-divider"></div>
 						</div>
-						<div v-for="day in days" class="flex-table-column">
+						<div v-for="location in locations" class="flex-table-column">
 							<div class="flex-table-column-holder">
 								<div class="entry-container rounded">Hallo!</div>
 							</div>
@@ -46,13 +46,19 @@
 
 <script>
 import * as mutations from "../../store/mutation-types";
+import * as actions from "../../store/action-types";
 
 export default {
 	data () {
 		return {
-			days: [],
+			reservations: [],
 			times: []
 		};
+	},
+	computed: {
+		locations: function () {
+			return this.$store.state.locations;
+		}
 	},
 	methods: {
 		synchronizeScroll: function (event) {
@@ -60,8 +66,8 @@ export default {
 		}
 	},
 	created: function () {
-		this.$store.commit(mutations.CHANGE_LOCALE,{locale: "nl"});
-		this.days = this.moment.weekdays();
+		this.$store.commit(mutations.CHANGE_LOCALE,{locale: "nl"}); //Temporary
+		this.$store.dispatch(actions.GET_LOCATIONS);
 
 		const division = 30;
 		let currentTime = this.moment("00:00", "HH:mm");
@@ -117,7 +123,7 @@ export default {
 				flex: none;
 			}
 		}
-		&-day {
+		&-location {
 			border-right: black 1px solid;
 			overflow: hidden;
 			flex: 1 1 0;

@@ -15,6 +15,22 @@ export default {
 				Vue.router.push({name: "login", query: {invalid: true}});
 			}
 		});
+	},
+
+	[types.GET_LOCATIONS]({commit}, payload) {
+		let uri = "locations";
+		if (payload.hasOwnProperty("uuid")) {
+			uri += "/" + payload.uuid;
+		}
+
+		Vue.http.get(uri).then((response) => {
+			response.json().then((data) => {
+				commit(mutations.UPDATE_LOCATIONS, {locations: data});
+			});
+		}).catch((response) => {
+			console.log(response.status);
+			console.log("catched!");
+		});
 	}
 
 };

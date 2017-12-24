@@ -14,7 +14,9 @@ export default new Vuex.Store({
 	mutations,
 	state: {
 		user: {},
-		locale: "en-us"
+		locale: "en-us",
+		locations: [],
+		error: false //Make this into an error class
 	},
 	strict: debug
 });
