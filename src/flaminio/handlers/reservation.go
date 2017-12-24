@@ -8,7 +8,6 @@ import (
 	"flaminio/database"
 	"github.com/gin-gonic/gin"
 	"time"
-	"encoding/json"
 	"errors"
 	"flaminio/utility"
 	"database/sql"
@@ -51,10 +50,10 @@ func GETReservationsHandler(c *gin.Context) {
 		return
 	}
 
-	jsonResponse(Response{STATUS_SUCCESS, reservations}, c.Writer)
+	c.JSON(http.StatusOK, reservations)
 }
 
-func PUTReservationsHandler(c *gin.Context) {
+func POSTReservationsHandler(c *gin.Context) {
 	user := getUserFromContext(c)
 
 	if !checkPermission(user, "canEditSchedule") {
@@ -63,20 +62,18 @@ func PUTReservationsHandler(c *gin.Context) {
 		return
 	}
 
-	type putReservationsBody struct {
-		Name        string                   `json:"name"`
+	var userInput struct {
+		Name        string                   `json:"name" binding:"required"`
 		Description string                   `json:"description"`
-		StartTimestamp models.CustomDateAndTime `json:"start"`
-		EndTimestamp models.CustomDateAndTime `json:"end"`
-		LocationID  uuid.UUID                `json:"location_id"`
+		StartTimestamp models.CustomDateAndTime `json:"start" binding:"required"`
+		EndTimestamp models.CustomDateAndTime `json:"end" binding:"required"`
+		LocationID  uuid.UUID                `json:"location_id" binding:"required"`
 		SequenceID  uuid.UUID                `json:"sequence_id"`
 	}
 
-	var userInput putReservationsBody
-	//TODO Use disallowunknownfields once GO 1.10 is released
-	err := json.NewDecoder(c.Request.Body).Decode(&userInput)
+	err := c.BindJSON(&userInput)
 
-	if err != nil || userInput.Name == "" || userInput.Description == "" || userInput.LocationID == uuid.Nil {
+	if err != nil || userInput.StartTimestamp.Time.IsZero() || userInput.EndTimestamp.Time.IsZero() {
 		c.AbortWithError(http.StatusBadRequest, errors.New("error in request"))
 		fmt.Fprint(c.Writer, "Error in request")
 		return
@@ -84,20 +81,30 @@ func PUTReservationsHandler(c *gin.Context) {
 
 	reservation := models.Reservation {
 		Name: userInput.Name,
-		Description: userInput.Description,
+		Description: models.ToNullString(userInput.Description),
 		CreatorID:   user.UUID,
 		LocationID:  userInput.LocationID,
-		SequenceID:  toNullUUID(userInput.SequenceID),
+		SequenceID:  models.ToNullUUID(userInput.SequenceID),
 		StartTimestamp: userInput.StartTimestamp,
 		EndTimestamp: userInput.EndTimestamp,
 	}
 
 	reservationUUID, err := database.CreateReservation(&reservation)
 	if err != nil {
+		if isUniqueViolation(err) {
+			c.AbortWithError(http.StatusConflict, errors.New("reservation name already exists"))
+			fmt.Fprint(c.Writer, "Reservation name already exists")
+			return
+		}
+		if isForeignKeyViolation(err) {
+			c.AbortWithError(http.StatusConflict, errors.New("invalid location or sequence uuid given"))
+			fmt.Fprint(c.Writer, "Invalid location or sequence UUID given")
+			return
+		}
 		c.AbortWithError(http.StatusInternalServerError, errors.New("error while creating a reservation: " + err.Error()))
 		fmt.Fprint(c.Writer, "Error while creating reservation")
 		return
 	}
 
-	jsonResponse(Response{STATUS_SUCCESS, struct {uuid uuid.UUID}{reservationUUID}}, c.Writer)
+	c.JSON(http.StatusOK, struct {Uuid uuid.UUID `json:"uuid"`}{reservationUUID})
 }

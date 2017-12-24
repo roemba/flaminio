@@ -128,3 +128,41 @@ func CreateLocation(l *models.Location) (locationUUID uuid.UUID, err error) {
 	err = db.QueryRow("INSERT INTO flaminio.locations (name, description) VALUES ($1, $2) RETURNING uuid", l.Name, l.Description).Scan(&locationUUID)
 	return locationUUID, err
 }
+
+func GetLocations() (locationsArray []models.Location, err error) {
+	rows, err := db.Queryx(`SELECT * FROM flaminio.locations`)
+	if err != sql.ErrNoRows {
+		utility.Fatal(err)
+	} else {
+		rows.Close()
+		return nil, err
+	}
+	defer rows.Close()
+
+
+	for rows.Next() {
+		var location models.Location
+		err := rows.StructScan(&location)
+		utility.Fatal(err)
+
+		locationsArray = append(locationsArray, location)
+	}
+	err = rows.Err()
+	return locationsArray, err
+}
+
+func GetLocationByUUID(locationUUID uuid.UUID) (location models.Location, err error) {
+	err = db.QueryRowx(`SELECT * FROM flaminio.locations WHERE uuid = $1`, locationUUID).StructScan(&location)
+	return location, err
+}
+
+func DeleteLocation(locationUUID uuid.UUID) (err error) {
+	_, err = db.Exec(`DELETE FROM flaminio.locations WHERE uuid = $1`, locationUUID)
+	return err
+}
+
+func UpdateLocation(l *models.Location) (err error) {
+	_, err = db.Exec(`UPDATE flaminio.locations SET (updatedat, name, description) = ((NOW() AT TIME ZONE 'utc'),
+ 								$2, $3) WHERE uuid = $1`, l.UUID, l.Name, l.Description)
+	return err
+}

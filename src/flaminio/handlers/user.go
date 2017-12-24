@@ -1,9 +1,10 @@
 package handlers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 func UserHandler(c *gin.Context) {
-	user := getUserFromContext(c)
-
-	jsonResponse(Response{STATUS_SUCCESS,user}, c.Writer)
+	c.JSON(http.StatusOK, Envelope{STATUS_SUCCESS, getUserFromContext(c)})
 }

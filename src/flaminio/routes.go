@@ -16,14 +16,24 @@ func setRoutes(router *gin.Engine) {
 	v1 := router.Group("/api/v1")
 	{
 		v1.POST("/auth/login", handlers.LoginHandler)
-		authorized := v1.Group("/")
+		authorized := v1.Group("")
 		authorized.Use(validateTokenMiddleware)
 		{
 			authorized.GET("/auth/user", handlers.UserHandler)
 			authorized.GET("/auth/refresh", handlers.RefreshHandler)
+
 			authorized.GET("/reservations", handlers.GETReservationsHandler)
-			authorized.PUT("/reservations", handlers.PUTReservationsHandler)
-			authorized.PUT("/locations", handlers.PUTLocationsHandler)
+			authorized.GET("/locations/*uuid", handlers.GETLocationsHandler)
+
+			authorized.DELETE("/locations/:uuid", handlers.DELETELocationHandler)
+
+			jsonRequestBody := authorized.Group("")
+			jsonRequestBody.Use(checkMediaTypeHeaderIsJson)
+			{
+				jsonRequestBody.POST("/reservations", handlers.POSTReservationsHandler)
+				jsonRequestBody.POST("/locations", handlers.POSTLocationsHandler)
+				jsonRequestBody.PUT("/locations", handlers.PUTLocationsHandler)
+			}
 		}
 	}
 }

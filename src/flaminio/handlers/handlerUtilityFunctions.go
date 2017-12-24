@@ -3,14 +3,13 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"errors"
-	"github.com/satori/go.uuid"
 	"flaminio/database"
 	"flaminio/models"
 	"flaminio/utility"
 	"github.com/lib/pq"
+	"strings"
 )
 
 const (
@@ -18,34 +17,9 @@ const (
 	STATUS_FAIL      = "failed"
 )
 
-type Response struct {
+type Envelope struct {
 	Status string `json:"status"`
 	Data interface{} `json:"data"`
-}
-
-func jsonResponse(response interface{}, w http.ResponseWriter) {
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResponse)
-}
-
-func toNullUUID(u uuid.UUID) uuid.NullUUID {
-	if u == uuid.Nil {
-		return uuid.NullUUID{
-			UUID: u,
-			Valid: false,
-		}
-	}
-	return uuid.NullUUID{
-		UUID: u,
-		Valid: true,
-	}
 }
 
 func getUserFromContext(c *gin.Context) (user models.User) {
@@ -75,5 +49,17 @@ func isUniqueViolation(err error) (bool){
 		return true
 	}
 	return false
+}
+
+func isForeignKeyViolation(err error) (bool){
+	const FOREIGN_KEY_VIOLATION_CODE = "23503"
+	if err, ok := err.(*pq.Error); ok && string(err.Code) == FOREIGN_KEY_VIOLATION_CODE {
+		return true
+	}
+	return false
+}
+
+func removeSlash(s string) (string) {
+	return strings.Replace(s, "/", "", -1)
 }
 

@@ -51,3 +51,12 @@ func validateTokenMiddleware(c *gin.Context){
 	}
 	c.Abort()
 }
+
+func checkMediaTypeHeaderIsJson(c *gin.Context) {
+	if !(c.GetHeader("Content-Type") == "application/json") {
+		c.AbortWithError(http.StatusUnsupportedMediaType, errors.New("invalid media type"))
+		fmt.Fprint(c.Writer, "Invalid media type")
+		c.Abort()
+	}
+	c.Next()
+}

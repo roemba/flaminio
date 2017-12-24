@@ -30,7 +30,6 @@ func createNewToken(user models.User, c *gin.Context) (tokenString string) {
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, errors.New("error while signing the token: " + err.Error()))
 		fmt.Fprintln(c.Writer, "Error while signing the token")
-		utility.Fatal(err)
 		return
 	}
 
@@ -65,11 +64,9 @@ func LoginHandler(c *gin.Context) {
 
 	database.AddDatabaseLog(user.UUID, utility.GetUUIDFromMapSafely("Authentication", database.LogOperationTypeMap),"User logged in")
 
-	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
+	c.Header("Authorization", "Bearer " + createNewToken(user, c))
 }
 
 func RefreshHandler(c *gin.Context) {
-	user := getUserFromContext(c)
-
-	c.Writer.Header().Set("Authorization", "Bearer " + createNewToken(user, c))
+	c.Header("Authorization", "Bearer " + createNewToken(getUserFromContext(c), c))
 }
