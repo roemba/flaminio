@@ -1,8 +1,8 @@
 <template>
 	<div class="wrapper d-flex flex-column">
-		<navbar class="up"></navbar>
+		<navbar class="up"/>
 		<div v-if="$auth.ready()" :style="{'background-color': $store.state.viewportBackgroundColor}" class="container-fluid down">
-			<router-view></router-view>
+			<router-view/>
 		</div>
 		<p v-else>Loading...</p>
 	</div>

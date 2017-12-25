@@ -13,6 +13,7 @@ type StandardModel struct {
 }
 
 //Functional models
+//TODO ADD preferred locale
 type User struct {
 	StandardModel
 	FirstName string `json:"firstname"`

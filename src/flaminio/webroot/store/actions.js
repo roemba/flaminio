@@ -1,6 +1,7 @@
 import Vue from "vue";
 import * as types from "./action-types";
 import * as mutations from "./mutation-types";
+import {i18n} from "@/lang";
 
 export default {
 
@@ -19,7 +20,7 @@ export default {
 
 	[types.GET_LOCATIONS]({commit}, payload) {
 		let uri = "locations";
-		if (payload.hasOwnProperty("uuid")) {
+		if (payload !== undefined && payload.hasOwnProperty("uuid")) {
 			uri += "/" + payload.uuid;
 		}
 
@@ -31,6 +32,19 @@ export default {
 			console.log(response.status);
 			console.log("catched!");
 		});
-	}
+	},
 
+	[types.LOAD_LANGUAGE]({state, commit}, locale) {
+		if (i18n.locale !== locale) {
+			if (state.loadedLanguages.indexOf(locale) === -1) {
+				import(/* webpackChunkName: "lang-[request]"*/ `@/lang/${locale}`).then((msgs) => {
+					i18n.setLocaleMessage(locale, msgs.default);
+					commit(mutations.ADD_LOADED_LANGUAGE, {locale: locale});
+					commit(mutations.CHANGE_LOCALE, {locale: locale});
+				});
+			} else {
+				commit(mutations.CHANGE_LOCALE, {locale: locale});
+			}
+		}
+	}
 };

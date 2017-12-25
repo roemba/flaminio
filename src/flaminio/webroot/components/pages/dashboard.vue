@@ -1,6 +1,6 @@
 <template>
 	<div class="container-fluid dashboard">
-		<p>You are now viewing the dashboard {{moment.weekdays()}}</p>
+		<p>You are now viewing the dashboard {{ moment.weekdays() }}</p>
 	</div>
 </template>
 

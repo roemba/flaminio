@@ -4,6 +4,7 @@ import VueAuth from "@websanova/vue-auth";
 import App from "./components/app.vue";
 import store from "./store";
 import router from "./routes";
+import {i18n} from "./lang";
 
 import "popper.js";
 import "bootstrap";
@@ -51,5 +52,6 @@ new Vue({
 	el: "#app",
 	store,
 	router,
+	i18n,
 	render: (h) => {return h(App);}
 });

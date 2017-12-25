@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-expand-md navbar-dark">
 		<router-link class="navbar-brand" :to="{name: 'dashboard'}">Flamin.io</router-link>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
+			<span class="navbar-toggler-icon"/>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav mr-auto">
@@ -26,7 +26,7 @@
 			</ul>
 			<div class="navbar-nav dropdown">
 				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownUser" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false">{{dropdownLabel}}</button>
+					aria-haspopup="true" aria-expanded="false">{{ dropdownLabel }}</button>
 				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownUser">
 					<a @click="$auth.logout()" :class="['dropdown-item', {disabled: !$auth.check()}]" href="#">Logout</a>
 				</div>

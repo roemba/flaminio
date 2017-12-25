@@ -15,8 +15,9 @@ export default new Vuex.Store({
 	state: {
 		user: {},
 		locale: "en-us",
+		loadedLanguages: ["en"],
 		locations: [],
-		error: false //Make this into an error class
+		error: false,
 	},
 	strict: debug
 });

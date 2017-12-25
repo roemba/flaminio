@@ -1,35 +1,35 @@
 <template>
 	<div class="container-fluid schedule d-flex flex-column">
-		<h1>Schedules</h1>
+		<h1>Schedules</h1>{{ $t("message.hello") }}
 
 		<div class="schedule-container">
 			<div class="schedule-top-container">
-				<div class="schedule-top-container-time-container-offset"></div>
+				<div class="schedule-top-container-time-container-offset"/>
 				<div class="schedule-top-container-top-container-inner">
 					<div class="schedule-location-container-outer">
 						<div class="schedule-location-container-inner">
 							<div v-for="location in locations" class="schedule-location">
-								{{location.name}}
+								{{ location.name }}
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="schedule-top-container-scrollbar-offset"></div>
+				<div class="schedule-top-container-scrollbar-offset"/>
 			</div>
 			<div class="schedule-bottom-container">
 				<div class="schedule-time-container" ref="timeContainer">
 					<div class="schedule-time-container-inner">
 						<div v-for="(time, index) in times" class="schedule-time-container-inner-entry">
-						<span class="schedule-time-container-inner-entry-text">
-							{{time}}
-						</span>
+							<span class="schedule-time-container-inner-entry-text">
+								{{ time }}
+							</span>
 						</div>
 					</div>
 				</div>
 				<div class="schedule-entry-container" @scroll="synchronizeScroll">
 					<div class="flex-table">
 						<div>
-							<div v-for="(time, index) in times" class="horizontal-divider"></div>
+							<div v-for="(time, index) in times" class="horizontal-divider"/>
 						</div>
 						<div v-for="location in locations" class="flex-table-column">
 							<div class="flex-table-column-holder">
@@ -60,20 +60,21 @@ export default {
 			return this.$store.state.locations;
 		}
 	},
-	methods: {
-		synchronizeScroll: function (event) {
-			this.$refs.timeContainer.scrollTop = event.target.scrollTop;
-		}
-	},
 	created: function () {
-		this.$store.commit(mutations.CHANGE_LOCALE,{locale: "nl"}); //Temporary
+		//this.$store.commit(mutations.CHANGE_LOCALE,{locale: "nl"}); //Temporary
 		this.$store.dispatch(actions.GET_LOCATIONS);
+		this.$store.dispatch(actions.LOAD_LANGUAGE, "nl");
 
 		const division = 30;
 		let currentTime = this.moment("00:00", "HH:mm");
 
 		for (currentTime; currentTime.isBefore(this.moment("23:31", "HH:mm")); currentTime.add(division, "minutes")) {
 			this.times.push(currentTime.format("HH:mm"));
+		}
+	},
+	methods: {
+		synchronizeScroll: function (event) {
+			this.$refs.timeContainer.scrollTop = event.target.scrollTop;
 		}
 	}
 };

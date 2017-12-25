@@ -10,6 +10,7 @@
 	"jasmine": true
   },
   "rules": {
+	"strict": 0,
 	"indent": ["warn", "tab"],
 	"quotes": ["warn", "double", {"avoidEscape": true, "allowTemplateLiterals": true}],
 	"no-console": "warn",
@@ -59,6 +60,19 @@
 	"vue/no-multi-spaces": "warn",
 	"vue/v-bind-style": "warn",
 	"vue/v-on-style": "warn",
-	"vue/require-v-for-key": "off"
+	"vue/require-v-for-key": "off",
+	"vue/html-indent": ["warn", "tab"],
+	"vue/order-in-components": "warn",
+	"vue/max-attributes-per-line": "off",
+	"vue/no-unused-vars": "warn"
+  },
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+	"parser": "babel-eslint",
+	"parserOptions": {
+	  "sourceType": "module",
+	  "allowImportExportEverywhere": true,
+	  "codeFrame": false
+	}
   }
 }

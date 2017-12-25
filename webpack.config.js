@@ -1,13 +1,18 @@
 const CompressionPlugin = require("compression-webpack-plugin");
 const VueLoaderOptionsPlugin = require("vue-loader-options-plugin");
 const webpack = require("webpack");
+const path = require("path");
 
 module.exports = {
 	output: {
-		filename: "build.js"
+		filename: "build.js",
+		publicPath: "/js/"
 	},
 	resolve: {
-		extensions: [".js", ".vue", ".json"]
+		extensions: [".js", ".vue", ".json"],
+		alias: {
+			"@": path.resolve("src/flaminio/webroot")
+		}
 	},
 	module: {
 		rules: [
@@ -17,7 +22,8 @@ module.exports = {
 				use: {
 					loader: "babel-loader",
 					options: {
-						presets: ["env"]
+						presets: ["env"],
+						plugins: ["syntax-dynamic-import"]
 					}
 				}
 			},
