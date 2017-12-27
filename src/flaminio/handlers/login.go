@@ -68,5 +68,11 @@ func LoginHandler(c *gin.Context) {
 }
 
 func RefreshHandler(c *gin.Context) {
+	database.AddTokenToBlacklist(getTokenFromContext(c))
 	c.Header("Authorization", "Bearer " + createNewToken(getUserFromContext(c), c))
+}
+
+func LogoutHandler(c *gin.Context) {
+	database.AddTokenToBlacklist(getTokenFromContext(c))
+	c.Status(http.StatusOK)
 }

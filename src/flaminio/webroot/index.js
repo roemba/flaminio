@@ -5,6 +5,7 @@ import App from "./components/app.vue";
 import store from "./store";
 import router from "./routes";
 import {i18n} from "./lang";
+import FontAwesomeIcon from "@fortawesome/vue-fontawesome";
 
 import "popper.js";
 import "bootstrap";
@@ -20,30 +21,15 @@ Vue.use(VueAuth, {
 });
 
 Vue.auth.options.rolesVar = "role";
+Vue.auth.options.logoutData.makeRequest = true;
 Vue.auth.options.logoutData.redirect = "/login";
 
-function findScrollbarWidth() {
-	let scrollDiv = document.createElement("div");
-	scrollDiv.style.cssText = "width: 100px;" +
-		"height: 100px;" +
-		"overflow: scroll;" +
-		"position: absolute;" +
-		"top: -9999px;";
-	document.body.appendChild(scrollDiv);
-
-	// Get the scrollbar width
-	const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-
-	// Delete the DIV
-	document.body.removeChild(scrollDiv);
-	return scrollbarWidth;
-}
+Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 Vue.mixin({
 	data () {
 		return {
 			moment: moment,
-			scrollBarWidth: findScrollbarWidth()
 		};
 	}
 });

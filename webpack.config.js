@@ -6,7 +6,6 @@ const path = require("path");
 module.exports = {
 	output: {
 		filename: "build.js",
-		publicPath: "/js/"
 	},
 	resolve: {
 		extensions: [".js", ".vue", ".json"],
@@ -40,13 +39,20 @@ module.exports = {
 			{
 				test: /\.css$/,
 				loader: ["style-loader", "css-loader"]
+			},
+			{
+				test: /\.svg$/,
+				loader: "file-loader",
+				options: {
+					outputPath: "/images/"
+				}
 			}
 		]
 	},
 	plugins: [
 		new VueLoaderOptionsPlugin({
 			"sass-resources-loader": {
-				resources: ["./src/flaminio/webroot/variables.scss"]
+				resources: ["./src/flaminio/webroot/scss/variables.scss"]
 			}
 		}),
 		new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /nl|en-gb|en-us/),

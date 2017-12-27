@@ -55,6 +55,11 @@ func migrate() (err error) {
 		return err
 	}
 
+	err = createTokenBlacklistTable()
+	if err != nil {
+		return err
+	}
+
 	log.Println("Finished migration")
 	return
 }
@@ -120,7 +125,8 @@ func createUsersTable() (err error) {
 					middleName character varying(255),
 					lastName character varying(255) NOT NULL,
 					password bytea NOT NULL,
-					email citext NOT NULL UNIQUE
+					email citext NOT NULL UNIQUE,
+					preferredLocale character varying(10) NOT NULL DEFAULT 'en'
 				)`)
 	fatal(err, tx)
 
@@ -232,5 +238,13 @@ func createReservationsTable() (err error) {
 					startTimestamp timestamp NOT NULL,
 					endTimestamp timestamp NOT NULL
 				)`)
+	return err
+}
+
+func createTokenBlacklistTable() (err error) {
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS flaminio.token_blacklist (
+					jwtTokenDigest bytea PRIMARY KEY,
+					revocationDate timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc')
+					)`)
 	return err
 }

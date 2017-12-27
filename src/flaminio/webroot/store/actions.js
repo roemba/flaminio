@@ -5,12 +5,13 @@ import {i18n} from "@/lang";
 
 export default {
 
-	[types.AUTHENTICATE]({commit}, payload) {
+	[types.AUTHENTICATE]({dispatch, commit}, payload) {
 		Vue.auth.login({
 			body: {email: payload.email, password: payload.password},
 			rememberMe: payload.rememberMe,
 			success: () => {
 				commit(mutations.UPDATE_USER, {user: Vue.auth.user()});
+				dispatch(types.LOAD_LANGUAGE, Vue.auth.user().preferred_locale);
 			},
 			error: () => {
 				Vue.router.push({name: "login", query: {invalid: true}});
@@ -29,6 +30,7 @@ export default {
 				commit(mutations.UPDATE_LOCATIONS, {locations: data});
 			});
 		}).catch((response) => {
+			//TODO Add proper error reporting
 			console.log(response.status);
 			console.log("catched!");
 		});

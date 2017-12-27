@@ -1,21 +1,12 @@
 <template>
 	<div class="container-fluid dashboard">
-		<p>You are now viewing the dashboard {{ moment.weekdays() }}</p>
+		<h1 v-t="{path: 'dashboard.welcome', args: {name:$auth.user().firstname}}"/>
 	</div>
 </template>
 
 <script>
 export default {
-	data () {
-		return {
-			msg: "It works!"
-		};
-	},
-	computed: {
-		testMessage: () => {
-			return "This works!";
-		}
-	}
+
 };
 </script>
 

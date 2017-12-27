@@ -106,5 +106,5 @@ func POSTReservationsHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, struct {Uuid uuid.UUID `json:"uuid"`}{reservationUUID})
+	c.JSON(http.StatusCreated, struct {Uuid uuid.UUID `json:"uuid"`}{reservationUUID})
 }

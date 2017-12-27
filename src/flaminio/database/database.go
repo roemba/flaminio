@@ -8,6 +8,8 @@ import (
 	"time"
 	"github.com/satori/go.uuid"
 	"database/sql"
+	"github.com/dgrijalva/jwt-go"
+	"crypto/sha256"
 )
 
 var db *sqlx.DB
@@ -165,4 +167,27 @@ func UpdateLocation(l *models.Location) (err error) {
 	_, err = db.Exec(`UPDATE flaminio.locations SET (updatedat, name, description) = ((NOW() AT TIME ZONE 'utc'),
  								$2, $3) WHERE uuid = $1`, l.UUID, l.Name, l.Description)
 	return err
+}
+
+func AddTokenToBlacklist(token *jwt.Token) (err error) {
+	_, err = db.Exec(`DELETE FROM flaminio.token_blacklist WHERE revocationDate <= ((NOW() AT TIME ZONE 'utc') - INTERVAL '12 hours')`)
+	utility.Fatal(err)
+
+	hasher := sha256.New()
+	hasher.Write([]byte(token.Raw))
+	_, err = db.Exec(`INSERT INTO flaminio.token_blacklist(jwtTokenDigest) VALUES ($1)`, string(hasher.Sum(nil)))
+	return err
+}
+
+func IsTokenBlacklisted(token *jwt.Token) (revoked bool) {
+	var blacklistedToken models.BlacklistedToken
+	hasher := sha256.New()
+	hasher.Write([]byte(token.Raw))
+	err := db.QueryRowx(`SELECT * FROM flaminio.token_blacklist WHERE jwtTokenDigest = $1`, string(hasher.Sum(nil))).StructScan(&blacklistedToken)
+	if err == sql.ErrNoRows {
+		return false
+	} else if err != nil {
+		utility.Fatal(err)
+	}
+	return true
 }

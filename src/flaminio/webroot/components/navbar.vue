@@ -7,28 +7,42 @@
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav mr-auto">
 				<li :class="['nav-item', {active: $route.name === 'dashboard'}]">
-					<router-link class="nav-link" :to="{name: 'dashboard'}">Dashboard</router-link>
+					<router-link class="nav-link" :to="{name: 'dashboard'}">{{ $t("navbar.dashboardLabel") }}</router-link>
 				</li>
 				<li :class="['nav-item', {active: $route.name === 'schedule'}]">
-					<router-link class="nav-link" :to="{name: 'schedule'}">Schedule</router-link>
+					<router-link class="nav-link" :to="{name: 'schedule'}">{{ $t("navbar.scheduleLabel") }}</router-link>
+				</li>
+				<li :class="['nav-item', {active: $route.name === 'users'}]">
+					<router-link class="nav-link" :to="{name: 'users'}">{{ $t("navbar.usersLabel") }}</router-link>
 				</li>
 				<li class="nav-item">
 					<div class="dropdown">
 						<a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownSettings" data-toggle="dropdown"
-							aria-haspopup="true" aria-expanded="false">Settings</a>
+							aria-haspopup="true" aria-expanded="false">{{ $t("navbar.settingsLabel") }}</a>
 						<div class="dropdown-menu" aria-labelledby="dropdownSettings">
-							<a class="dropdown-item" href="#">Courses</a>
-							<a class="dropdown-item" href="#">Rooms</a>
-							<a class="dropdown-item" href="#">Users</a>
+							<a class="dropdown-item" href="#">{{ $t("navbar.settings.sequences") }}</a>
+							<a class="dropdown-item" href="#">{{ $t("navbar.settings.locations") }}</a>
 						</div>
 					</div>
 				</li>
 			</ul>
+			<div class="navbar-nav dropdown mr-1">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownLanguage" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false"><font-awesome-icon :icon="languageIcon" /></button>
+				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownLanguage">
+					<a @click="changeLanguage('en')" class="dropdown-item language-container" href="#">
+						<span class="flag-icon flag-icon-gb mr-3"/>{{ $t("navbar.languages.english") }}
+					</a>
+					<a @click="changeLanguage('nl')" class="dropdown-item language-container" href="#">
+						<span class="flag-icon flag-icon-nl mr-3"/>{{ $t("navbar.languages.dutch") }}
+					</a>
+				</div>
+			</div>
 			<div class="navbar-nav dropdown">
 				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownUser" data-toggle="dropdown"
 					aria-haspopup="true" aria-expanded="false">{{ dropdownLabel }}</button>
 				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownUser">
-					<a @click="$auth.logout()" :class="['dropdown-item', {disabled: !$auth.check()}]" href="#">Logout</a>
+					<a @click="$auth.logout()" :class="['dropdown-item', {disabled: !$auth.check()}]" href="#">{{ $t("navbar.logout") }}</a>
 				</div>
 			</div>
 		</div>
@@ -36,13 +50,24 @@
 </template>
 
 <script>
+import {faGlobe} from "@fortawesome/fontawesome-free-solid";
+import * as actions from "../store/action-types";
+
 export default {
 	computed: {
 		dropdownLabel: function() {
 			if (this.$auth.check()) {
 				return this.$auth.user().firstname + " " + this.$auth.user().lastname;
 			}
-			return "Please login";
+			return this.$t("navbar.loginRequest");
+		},
+		languageIcon: () => {
+			return faGlobe;
+		}
+	},
+	methods: {
+		changeLanguage: function (lang) {
+			this.$store.dispatch(actions.LOAD_LANGUAGE, lang);
 		}
 	}
 };
@@ -52,5 +77,9 @@ export default {
 	nav {
 		background-color: #0A2239;
 		z-index: 3;
+	}
+
+	.dropdown-menu {
+		min-width: initial;
 	}
 </style>

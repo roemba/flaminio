@@ -89,7 +89,7 @@ func POSTLocationsHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, struct {UUID uuid.UUID `json:"uuid"`}{UUID: locationUUID,})
+	c.JSON(http.StatusCreated, struct {UUID uuid.UUID `json:"uuid"`}{UUID: locationUUID,})
 }
 
 func DELETELocationHandler(c *gin.Context) {

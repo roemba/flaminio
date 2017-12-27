@@ -1,5 +1,5 @@
 export default {
-	message: {
-		hello: "hallo wereld!"
+	dashboard: {
+		welcome: "Welkom {name}!"
 	}
 };

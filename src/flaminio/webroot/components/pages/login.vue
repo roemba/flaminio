@@ -1,33 +1,35 @@
 <template>
 	<div class="outer-container">
 		<div :class="['container', 'rounded', [$route.query.invalid ? 'incorrect-password' : '']]">
-			<p v-if="!$route.query.invalid">Please login using your provided user credentials</p>
-			<p v-else>Invalid username or password. Please try again.</p>
+			<p v-if="!$route.query.invalid">{{ $t("login.header") }}</p>
+			<p v-else>{{ $t("login.headerInvalid") }}</p>
 			<form @submit.prevent="login()" autocomplete="on" novalidate>
 				<div class="form-group">
-					<label for="email">Email address</label>
-					<input v-model="email" type="email" :class="['form-control', [emailIsValid ? 'is-valid' : 'is-invalid']]" id="email" placeholder="Enter email" required>
+					<label for="email">{{ $t("login.email") }}</label>
+					<input v-model="email" type="email" :class="['form-control', [emailIsValid ? 'is-valid' : 'is-invalid']]" id="email" :placeholder="$t('login.emailPlaceholder')" required>
 					<div v-if="!emailIsValid" class="invalid-feedback">
-						Please provide a valid email
+						{{ $t("login.invalidEmail") }}
 					</div>
 				</div>
 				<div class="form-group">
-					<label for="password">Password</label>
-					<input v-model="password" type="password" :class="['form-control', [passwordIsValid ? 'is-valid' : 'is-invalid']]" id="password" placeholder="Password" required>
+					<label for="password">{{ $t("login.password") }}</label>
+					<input v-model="password" type="password"
+						:class="['form-control', [passwordIsValid ? 'is-valid' : 'is-invalid']]" id="password"
+						:placeholder="$t('login.passwordPlaceholder')" required>
 					<div v-if="!passwordIsValid" class="invalid-feedback">
-						Please provide a valid password
+						{{ $t("login.invalidPassword") }}
 					</div>
 				</div>
 				<div class="d-flex justify-content-between">
-					<button type="button" class="btn btn-secondary">Reset password</button>
+					<button type="button" class="btn btn-secondary">{{ $t("login.resetPassword") }}</button>
 					<div>
 						<div class="form-check form-check-inline pr-4">
 							<label class="form-check-label">
 								<input v-model="rememberMe" class="form-check-input" type="checkbox">
-								Remember me
+								{{ $t("login.rememberMe") }}
 							</label>
 						</div>
-						<button type="submit" class="btn btn-primary">Login</button>
+						<button type="submit" class="btn btn-primary">{{ $t("login.login") }}</button>
 					</div>
 				</div>
 			</form>

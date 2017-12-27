@@ -13,7 +13,6 @@ type StandardModel struct {
 }
 
 //Functional models
-//TODO ADD preferred locale
 type User struct {
 	StandardModel
 	FirstName string `json:"firstname"`
@@ -22,6 +21,7 @@ type User struct {
 	Password string `json:"-"`
 	Email string `json:"email"`
 	Permissions []Permission `json:"permissions"`
+	PreferredLocale string `json:"preferred_locale"`
 }
 
 type Permission struct {
@@ -68,4 +68,9 @@ type Log struct {
 type LogOperationType struct {
 	StandardModel
 	Name string `json:"name"`
+}
+
+type BlacklistedToken struct {
+	JwtTokenDigest []byte
+	RevocationDate CustomDateAndTime
 }

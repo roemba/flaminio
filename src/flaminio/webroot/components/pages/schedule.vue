@@ -1,6 +1,6 @@
 <template>
 	<div class="container-fluid schedule d-flex flex-column">
-		<h1>Schedules</h1>{{ $t("message.hello") }}
+		<h1>Schedules</h1>
 
 		<div class="schedule-container">
 			<div class="schedule-top-container">
@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import * as mutations from "../../store/mutation-types";
 import * as actions from "../../store/action-types";
 
 export default {
@@ -61,9 +60,7 @@ export default {
 		}
 	},
 	created: function () {
-		//this.$store.commit(mutations.CHANGE_LOCALE,{locale: "nl"}); //Temporary
 		this.$store.dispatch(actions.GET_LOCATIONS);
-		this.$store.dispatch(actions.LOAD_LANGUAGE, "nl");
 
 		const division = 30;
 		let currentTime = this.moment("00:00", "HH:mm");

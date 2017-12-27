@@ -21,6 +21,7 @@ func setRoutes(router *gin.Engine) {
 		{
 			authorized.GET("/auth/user", handlers.UserHandler)
 			authorized.GET("/auth/refresh", handlers.RefreshHandler)
+			authorized.POST("/auth/logout", handlers.LogoutHandler)
 
 			authorized.GET("/reservations", handlers.GETReservationsHandler)
 			authorized.GET("/locations/*uuid", handlers.GETLocationsHandler)

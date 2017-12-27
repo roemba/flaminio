@@ -10,6 +10,7 @@ import (
 	"flaminio/utility"
 	"github.com/lib/pq"
 	"strings"
+	"github.com/dgrijalva/jwt-go"
 )
 
 const (
@@ -25,12 +26,21 @@ type Envelope struct {
 func getUserFromContext(c *gin.Context) (user models.User) {
 	value, exists := c.Get("user")
 	if !exists {
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting the key"))
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting user from key"))
 		fmt.Fprintln(c.Writer, "Error extracting the key")
-		utility.Fatal(errors.New("could not load user from context"))
 		return
 	}
 	return value.(models.User)
+}
+
+func getTokenFromContext(c *gin.Context) (token *jwt.Token) {
+	value, exists := c.Get("token")
+	if !exists {
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error extracting ttoken from key"))
+		fmt.Fprintln(c.Writer, "Error extracting the key")
+		return
+	}
+	return value.(*jwt.Token)
 }
 
 func checkPermission(user models.User, permissionKey string) (hasPermission bool) {

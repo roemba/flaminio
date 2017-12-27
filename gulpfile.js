@@ -38,13 +38,13 @@ gulp.task("webpack-configure", () => {
 			sourceMap: true
 		}),
 		new webpack.optimize.AggressiveMergingPlugin()
-	)
+	);
 });
 
 gulp.task("webpack", () => {
 	return gulp.src(`${WEBROOT}/index.js`)
 		.pipe(webpackStream(webpackConfig))
-		.pipe(gulp.dest(`${DIST_FOLDER}/js/`));
+		.pipe(gulp.dest(`${DIST_FOLDER}`));
 });
 
 gulp.task("build", () => {

@@ -10,10 +10,16 @@
 
 <script>
 import NavBar from "./navbar.vue";
+import * as actions from "../store/action-types";
 
 export default {
 	name: "app",
-	components: {navbar: NavBar}
+	components: {navbar: NavBar},
+	created: function () {
+		this.$auth.ready(function () {
+			this.$store.dispatch(actions.LOAD_LANGUAGE, this.$auth.user().preferred_locale);
+		});
+	}
 };
 </script>
 
@@ -32,6 +38,7 @@ export default {
 
 <style lang="scss" global>
 	@import "~bootstrap/scss/bootstrap.scss";
+	@import "../scss/flag-icon-base.scss";
 	body {
 		background-color: #132E32;
 		color: white;
@@ -43,6 +50,10 @@ export default {
 
 	.container-fluid {
 		padding: 15px;
+	}
+
+	button {
+		cursor: pointer;
 	}
 </style>
 
