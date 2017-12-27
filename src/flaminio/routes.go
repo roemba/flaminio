@@ -1,9 +1,10 @@
 package flaminio
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/static"
 	"flaminio/handlers"
+
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 func setRoutes(router *gin.Engine) {

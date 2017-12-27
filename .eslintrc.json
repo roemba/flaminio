@@ -28,7 +28,7 @@
 	"no-eq-null": "warn",
 	"no-eval": "warn",
 	"no-extend-native": "warn",
-	"no-magic-numbers": "warn",
+	"no-magic-numbers": ["warn", {"ignore": [-1]}],
 	"no-multi-spaces": "warn",
 	"no-self-compare": "warn",
 	"no-sequences": "warn",
