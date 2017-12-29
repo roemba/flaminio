@@ -1,11 +1,12 @@
 package database
 
 import (
-	"log"
+	"database/sql"
 	"flaminio/models"
 	"flaminio/utility"
+	"log"
+
 	"github.com/satori/go.uuid"
-	"database/sql"
 )
 
 const standardModel = `uuid uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -235,8 +236,8 @@ func createReservationsTable() (err error) {
 					creatorId uuid NOT NULL REFERENCES flaminio.users ON DELETE RESTRICT ON UPDATE CASCADE,
 					locationId uuid NOT NULL REFERENCES flaminio.locations ON DELETE CASCADE ON UPDATE CASCADE,
 					sequenceId uuid REFERENCES flaminio.sequences ON DELETE CASCADE ON UPDATE CASCADE,
-					startTimestamp timestamp NOT NULL,
-					endTimestamp timestamp NOT NULL
+					duration tsrange NOT NULL,
+					EXCLUDE USING gist (locationid WITH =, duration WITH &&)
 				)`)
 	return err
 }

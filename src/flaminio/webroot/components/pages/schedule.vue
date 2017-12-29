@@ -1,6 +1,9 @@
 <template>
 	<div class="container-fluid schedule d-flex flex-column">
-		<h1>Schedules</h1>
+		<div class="toolbar p-2">
+			<label for="selectedDate">Select date</label>
+			<input class="form-control ml-1" type="text" v-model.lazy="selectedDateFunction" id="selectedDate">
+		</div>
 
 		<div class="schedule-container">
 			<div class="schedule-top-container">
@@ -19,7 +22,7 @@
 			<div class="schedule-bottom-container">
 				<div class="schedule-time-container" ref="timeContainer">
 					<div class="schedule-time-container-inner">
-						<div v-for="(time, index) in times" class="schedule-time-container-inner-entry">
+						<div v-for="time in times" class="schedule-time-container-inner-entry">
 							<span class="schedule-time-container-inner-entry-text">
 								{{ time }}
 							</span>
@@ -29,11 +32,11 @@
 				<div class="schedule-entry-container" @scroll="synchronizeScroll">
 					<div class="flex-table">
 						<div>
-							<div v-for="(time, index) in times" class="horizontal-divider"/>
+							<div v-for="time in times" class="horizontal-divider"/>
 						</div>
 						<div v-for="location in locations" class="flex-table-column">
 							<div class="flex-table-column-holder">
-								<div class="entry-container rounded">Hallo!</div>
+								<div :style="reservationStyle(reservation)" v-for="reservation in getReservationsByLocation(location.uuid)" class="entry-container rounded">Hallo!</div>
 							</div>
 						</div>
 					</div>
@@ -46,22 +49,35 @@
 
 <script>
 import * as actions from "../../store/action-types";
+import * as mutations from "../../store/mutation-types";
+import * as notifications from "../notification-types";
 
 export default {
-	data () {
+	data: function () {
 		return {
 			reservations: [],
-			times: []
+			times: [],
+			selectedDate: undefined
 		};
 	},
 	computed: {
 		locations: function () {
 			return this.$store.state.locations;
+		},
+		selectedDateFunction: {
+			get: function () {
+				return this.selectedDate.format("L");
+			},
+			set: function (newValue) {
+				this.selectedDate = this.moment(newValue, "L");
+				this.loadReservations();
+			}
 		}
 	},
 	created: function () {
 		this.$store.dispatch(actions.GET_LOCATIONS);
-		//this.$store.dispatch(actions.GET_LOCATIONS);
+		this.selectedDate = this.moment();
+		this.loadReservations();
 
 		const division = 30;
 		let currentTime = this.moment("00:00", "HH:mm");
@@ -73,6 +89,55 @@ export default {
 	methods: {
 		synchronizeScroll: function (event) {
 			this.$refs.timeContainer.scrollTop = event.target.scrollTop;
+		},
+		loadReservations: function () {
+			this.$http.get("reservations?date=" + this.selectedDate.format(this.ISO8601DATE)).then((response) => {
+				response.json().then((data) => {
+					this.reservations = data;
+				}).catch(() => {
+					this.$store.commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: this.$t("errors.loadLocationFailed")});
+				});
+			}).catch(() => {
+				this.$store.commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: this.$t("errors.loadLocationFailed")});
+			});
+		},
+		getReservationsByLocation: function (locationUUID) {
+			let reservationArray = [];
+			if (this.reservations !== null) {
+				for (let reservation of this.reservations) {
+					if (reservation.location_id === locationUUID){
+						reservationArray.push(reservation);
+					}
+				}
+			}
+			return reservationArray;
+		},
+		reservationStyle: function (reservation) {
+			let styleObject = {
+				left: "0",
+				width: "100%",
+				"z-index": "3"
+			};
+			const startTime = this.moment(reservation.start, this.ISO8601DATE_TIME);
+			const endTime = this.moment(reservation.end, this.ISO8601DATE_TIME);
+			const halfHourHeightPx = 48.;
+			const minuteHeight = halfHourHeightPx/30.;
+			const hourFraction = startTime.hour() + (startTime.minute()/60.);
+			const totalHeight = halfHourHeightPx*48.;
+			console.log(hourFraction);
+
+			const topOffset = Math.round(2.*halfHourHeightPx*hourFraction);
+			styleObject.top = topOffset + "px";
+
+			const minuteDifference = endTime.diff(startTime, "minutes");
+			let height = minuteDifference*minuteHeight;
+			if ((height + topOffset) > totalHeight) {
+				height -= (height + topOffset - totalHeight);
+			}
+			styleObject.height = Math.round(height) + "px";
+
+
+			return styleObject;
 		}
 	}
 };
@@ -87,6 +152,21 @@ export default {
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		overflow: hidden;
+	}
+
+	.toolbar {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		background-color: $f-grey-1;
+		label {
+			margin: 0;
+		}
+		input {
+			padding: 0;
+			text-align: center;
+			width: initial;
+		}
 	}
 
 	.schedule {
@@ -231,6 +311,7 @@ export default {
 	.entry-container {
 		position: absolute;
 		outline: none;
+		background-color: #00a6d6;
 	}
 
 </style>

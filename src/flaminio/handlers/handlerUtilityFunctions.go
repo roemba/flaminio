@@ -55,18 +55,20 @@ func checkPermission(user models.User, permissionKey string) (hasPermission bool
 
 func isUniqueViolation(err error) (bool){
 	const UNIQUE_VIOLATION_CODE = "23505"
-	if err, ok := err.(*pq.Error); ok && string(err.Code) == UNIQUE_VIOLATION_CODE {
-		return true
-	}
-	return false
+	pqErr, ok := err.(*pq.Error)
+	return ok && string(pqErr.Code) == UNIQUE_VIOLATION_CODE
+}
+
+func isExcludeViolation(err error) (bool){
+	const EXCLUDE_VIOLATION_CODE = "23P01"
+	pqErr, ok := err.(*pq.Error)
+	return ok && string(pqErr.Code) == EXCLUDE_VIOLATION_CODE
 }
 
 func isForeignKeyViolation(err error) (bool){
 	const FOREIGN_KEY_VIOLATION_CODE = "23503"
-	if err, ok := err.(*pq.Error); ok && string(err.Code) == FOREIGN_KEY_VIOLATION_CODE {
-		return true
-	}
-	return false
+	pqErr, ok := err.(*pq.Error)
+	return ok && string(pqErr.Code) == FOREIGN_KEY_VIOLATION_CODE
 }
 
 func removeSlash(s string) (string) {

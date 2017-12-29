@@ -1,10 +1,10 @@
 package models
 
 import (
-	"time"
-	"flaminio/utility"
-	"errors"
 	"encoding/json"
+	"errors"
+	"flaminio/utility"
+	"time"
 )
 
 type CustomDateAndTime struct {

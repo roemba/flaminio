@@ -66,15 +66,15 @@ func POSTReservationsHandler(c *gin.Context) {
 	var userInput struct {
 		Name        string                      `json:"name" binding:"required,max=255"`
 		Description models.CustomNullString     `json:"description"`
-		StartTimestamp models.CustomDateAndTime `json:"start" binding:"required"`
-		EndTimestamp models.CustomDateAndTime   `json:"end" binding:"required"`
+		Duration    models.CustomTsrange        `json:"duration"`
 		LocationID  uuid.UUID                   `json:"location_id" binding:"required"`
 		SequenceID  models.CustomNullUUID       `json:"sequence_id"`
 	}
 	err := c.BindJSON(&userInput)
 
-	if err != nil || userInput.StartTimestamp.Time.IsZero() || userInput.EndTimestamp.Time.IsZero() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("error in request" + err.Error()))
+	if err != nil || userInput.Duration.Tsrange.Lower.Time.IsZero() || userInput.Duration.Tsrange.Upper.Time.IsZero() ||
+		userInput.Duration.Tsrange.Upper.Time.Before(userInput.Duration.Tsrange.Lower.Time) {
+		c.AbortWithError(http.StatusBadRequest, errors.New("error in request"))
 		fmt.Fprint(c.Writer, "Error in request")
 		return
 	}
@@ -85,8 +85,7 @@ func POSTReservationsHandler(c *gin.Context) {
 		CreatorID:   user.UUID,
 		LocationID:  userInput.LocationID,
 		SequenceID:  userInput.SequenceID,
-		StartTimestamp: userInput.StartTimestamp,
-		EndTimestamp: userInput.EndTimestamp,
+		Duration: userInput.Duration,
 	}
 
 	reservationUUID, err := database.CreateReservation(&reservation)
@@ -99,6 +98,11 @@ func POSTReservationsHandler(c *gin.Context) {
 		if isForeignKeyViolation(err) {
 			c.AbortWithError(http.StatusConflict, errors.New("invalid location or sequence uuid given"))
 			fmt.Fprint(c.Writer, "Invalid location or sequence UUID given")
+			return
+		}
+		if isExcludeViolation(err) {
+			c.AbortWithError(http.StatusConflict, errors.New("overlap in duration for the same location"))
+			fmt.Fprint(c.Writer, "Overlap in duration for the same location")
 			return
 		}
 		c.AbortWithError(http.StatusInternalServerError, errors.New("error while creating a reservation: " + err.Error()))

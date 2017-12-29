@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+
 	"github.com/satori/go.uuid"
 )
 
@@ -52,8 +53,7 @@ type Reservation struct {
 	LocationID  uuid.UUID         `json:"location_id"`
 	Sequence    Sequence          `json:"-"`
 	SequenceID  CustomNullUUID     `json:"sequence_id"`
-	StartTimestamp CustomDateAndTime `json:"start"`
-	EndTimestamp CustomDateAndTime `json:"end"`
+	Duration    CustomTsrange     `json:"duration"`
 }
 
 type Log struct {

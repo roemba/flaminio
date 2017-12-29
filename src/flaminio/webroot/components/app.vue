@@ -49,7 +49,7 @@ export default {
 	}
 
 	.container-fluid {
-		padding: 15px;
+		padding: 0 0 15px 0;
 	}
 
 	button {

@@ -4,6 +4,8 @@ import * as mutations from "./mutation-types";
 import * as notifications from "../components/notification-types";
 import {i18n} from "@/lang";
 
+const ISO8601DATE = "Y-MM-DD";
+
 export default {
 
 	[types.AUTHENTICATE]({dispatch, commit}, payload) {
@@ -18,6 +20,20 @@ export default {
 				Vue.router.push({name: "login", query: {invalid: true}});
 			}
 		});
+	},
+
+	[types.LOAD_LANGUAGE]({state, commit}, locale) {
+		if (i18n.locale !== locale) {
+			if (state.loadedLanguages.indexOf(locale) === -1) {
+				import(/* webpackChunkName: "lang-[request]"*/ `@/lang/${locale}`).then((msgs) => {
+					i18n.setLocaleMessage(locale, msgs.default);
+					commit(mutations.ADD_LOADED_LANGUAGE, {locale: locale});
+					commit(mutations.CHANGE_LOCALE, {locale: locale});
+				});
+			} else {
+				commit(mutations.CHANGE_LOCALE, {locale: locale});
+			}
+		}
 	},
 
 	[types.GET_LOCATIONS]({commit}, payload) {
@@ -37,17 +53,15 @@ export default {
 		});
 	},
 
-	[types.LOAD_LANGUAGE]({state, commit}, locale) {
-		if (i18n.locale !== locale) {
-			if (state.loadedLanguages.indexOf(locale) === -1) {
-				import(/* webpackChunkName: "lang-[request]"*/ `@/lang/${locale}`).then((msgs) => {
-					i18n.setLocaleMessage(locale, msgs.default);
-					commit(mutations.ADD_LOADED_LANGUAGE, {locale: locale});
-					commit(mutations.CHANGE_LOCALE, {locale: locale});
-				});
-			} else {
-				commit(mutations.CHANGE_LOCALE, {locale: locale});
-			}
-		}
+	[types.GET_RESERVATIONS]({commit}, payload) {
+		Vue.http.get("reservations?date=" + payload.moment.format(ISO8601DATE)).then((response) => {
+			response.json().then((data) => {
+				commit(mutations.UPDATE_LOCATIONS, {locations: data});
+			}).catch(() => {
+				commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: i18n.t("errors.loadLocationFailed")});
+			});
+		}).catch(() => {
+			commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: i18n.t("errors.loadLocationFailed")});
+		});
 	}
 };

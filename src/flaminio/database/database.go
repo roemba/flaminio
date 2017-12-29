@@ -1,15 +1,16 @@
 package database
 
 import (
-	"flaminio/utility"
-	_ "github.com/lib/pq"
-	"github.com/jmoiron/sqlx"
-	"flaminio/models"
-	"time"
-	"github.com/satori/go.uuid"
-	"database/sql"
-	"github.com/dgrijalva/jwt-go"
 	"crypto/sha256"
+	"database/sql"
+	"flaminio/models"
+	"flaminio/utility"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	_ "github.com/jackc/pgx"
+	"github.com/jmoiron/sqlx"
+	"github.com/satori/go.uuid"
 )
 
 var db *sqlx.DB
@@ -91,8 +92,8 @@ func GetLogOperationsArray() (operationsArray []models.LogOperationType, err err
 }
 
 func GetReservationsByDate(date time.Time) (reservationsArray []models.Reservation, err error) {
-	rows, err := db.Queryx(`SELECT * FROM flaminio.reservations AS r WHERE r.starttimestamp::date <= $1::date
-									AND r.endtimestamp::date >= $1::date`, date.Format(utility.ISO8601DATE))
+	rows, err := db.Queryx(`SELECT * FROM flaminio.reservations AS r WHERE lower(r.duration)::date <= $1::date
+									AND upper(r.duration)::date >= $1::date`, date.Format(utility.ISO8601DATE))
 	if err != sql.ErrNoRows {
 		utility.Fatal(err)
 	} else {
@@ -120,9 +121,8 @@ func GetReservationsByDateAndLocation(date time.Time, locationStringArray []stri
 
 func CreateReservation(r *models.Reservation) (reservationUUID uuid.UUID, err error) {
 	err = db.QueryRow(`INSERT INTO flaminio.reservations (name, description, creatorId, locationId, sequenceId,
- 								startTimestamp, endTimestamp) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING uuid`, r.Name, r.Description,
- 									r.CreatorID, r.LocationID, r.SequenceID, r.StartTimestamp.Format(utility.ISO8601DATE_TIME),
-									r.EndTimestamp.Format(utility.ISO8601DATE_TIME)).Scan(&reservationUUID)
+ 								duration) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid`, r.Name, r.Description,
+ 									r.CreatorID, r.LocationID, r.SequenceID, r.Duration).Scan(&reservationUUID)
 	return reservationUUID, err
 }
 
