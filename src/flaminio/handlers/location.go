@@ -1,25 +1,20 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"fmt"
 	"errors"
-	"flaminio/models"
 	"flaminio/database"
-	"github.com/satori/go.uuid"
+	"flaminio/models"
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"database/sql"
+
+	"github.com/satori/go.uuid"
 )
 
 func GETLocationsHandler(c *gin.Context) {
-	user := getUserFromContext(c)
-
-	if !checkPermission(user, "canViewSchedule") {
-		c.AbortWithError(http.StatusForbidden, errors.New("user has invalid permissions to access this resource"))
-		fmt.Fprint(c.Writer, "Invalid permissions to access this resource")
-		return
-	}
-
 	var (
 		err error
 		locationArray []models.Location
@@ -39,8 +34,8 @@ func GETLocationsHandler(c *gin.Context) {
 	}
 
 	if err == sql.ErrNoRows {
-		c.AbortWithError(http.StatusNotFound, errors.New("could not find location"))
-		fmt.Fprint(c.Writer, "Could not find location")
+		c.AbortWithError(http.StatusNotFound, errors.New("could not find location(s)"))
+		fmt.Fprint(c.Writer, "Could not find location(s)")
 		return
 	}
 	if err != nil{
@@ -62,8 +57,8 @@ func POSTLocationsHandler(c *gin.Context) {
 	}
 
 	var userInput struct {
-		Name string `json:"name" binding:"required"`
-		Description string `json:"description"`
+		Name string `json:"name" binding:"required,max=255"`
+		Description models.CustomNullString `json:"description"`
 	}
 	err := c.BindJSON(&userInput)
 	if err != nil {
@@ -74,7 +69,7 @@ func POSTLocationsHandler(c *gin.Context) {
 
 	location := models.Location {
 		Name: userInput.Name,
-		Description: models.ToNullString(userInput.Description),
+		Description: userInput.Description,
 	}
 
 	locationUUID, err := database.CreateLocation(&location)
@@ -84,8 +79,8 @@ func POSTLocationsHandler(c *gin.Context) {
 			fmt.Fprint(c.Writer, "Location name already exists")
 			return
 		}
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error in getting reservations: " + err.Error()))
-		fmt.Fprint(c.Writer, "Error in getting reservations")
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error in creating locations: " + err.Error()))
+		fmt.Fprint(c.Writer, "Error in creating locations")
 		return
 	}
 
@@ -101,9 +96,7 @@ func DELETELocationHandler(c *gin.Context) {
 		return
 	}
 
-	var (
-		err error
-	)
+	var	err error
 	if locationUUID, convertError := uuid.FromString(removeSlash(c.Param("uuid"))); convertError == nil {
 			err = database.DeleteLocation(locationUUID)
 	} else {
@@ -132,8 +125,8 @@ func PUTLocationsHandler(c *gin.Context) {
 
 	var userInput struct {
 		UUID uuid.UUID `json:"uuid" binding:"required"`
-		Name string `json:"name" binding:"required"`
-		Description string `json:"description"`
+		Name string `json:"name" binding:"required,max=255"`
+		Description models.CustomNullString `json:"description"`
 	}
 	err := c.BindJSON(&userInput)
 	if err != nil {
@@ -145,7 +138,7 @@ func PUTLocationsHandler(c *gin.Context) {
 	location := models.Location {
 		StandardModel: models.StandardModel{UUID: userInput.UUID},
 		Name: userInput.Name,
-		Description: models.ToNullString(userInput.Description),
+		Description: userInput.Description,
 	}
 
 	err = database.UpdateLocation(&location)
@@ -155,8 +148,8 @@ func PUTLocationsHandler(c *gin.Context) {
 			fmt.Fprint(c.Writer, "Location name already exists")
 			return
 		}
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error in getting reservations: " + err.Error()))
-		fmt.Fprint(c.Writer, "Error in getting reservations")
+		c.AbortWithError(http.StatusInternalServerError, errors.New("error in updating locations: " + err.Error()))
+		fmt.Fprint(c.Writer, "Error in updating locations")
 		return
 	}
 

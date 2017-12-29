@@ -17,7 +17,7 @@ export default new Vuex.Store({
 		locale: "en",
 		loadedLanguages: ["en"],
 		locations: [],
-		error: false,
+		notification: {}
 	},
 	strict: debug
 });

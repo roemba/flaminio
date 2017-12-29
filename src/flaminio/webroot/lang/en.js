@@ -32,6 +32,9 @@ export default {
 		},
 		dashboard: {
 			welcome: "Welcome {name}!"
+		},
+		errors: {
+			loadLocationFailed: "Failed to load locations."
 		}
 	}
 };

@@ -22,6 +22,14 @@ export default {
 
 	[types.UPDATE_LOCATIONS](state, payload) {
 		state.locations = payload.locations;
+	},
+
+	[types.SHOW_NOTIFICATION](state, payload) {
+		state.notification = payload;
+	},
+
+	[types.DELETE_NOTIFICATION](state) {
+		state.notification = {};
 	}
 
 };

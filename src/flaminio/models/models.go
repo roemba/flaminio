@@ -19,7 +19,7 @@ type User struct {
 	MiddleName CustomNullString `json:"middlename"`
 	LastName string `json:"lastname"`
 	Password string `json:"-"`
-	Email string `json:"email"`
+	Email string `json:"email" binding:"required,email"`
 	Permissions []Permission `json:"permissions"`
 	PreferredLocale string `json:"preferred_locale"`
 }
@@ -47,11 +47,11 @@ type Reservation struct {
 	Name string `json:"name"`
 	Description CustomNullString `json:"description"`
 	Creator     User              `json:"-"`
-	CreatorID   uuid.UUID         `json:"creator-id"`
+	CreatorID   uuid.UUID         `json:"creator_id"`
 	Location    Location          `json:"-"`
-	LocationID  uuid.UUID         `json:"location-id"`
+	LocationID  uuid.UUID         `json:"location_id"`
 	Sequence    Sequence          `json:"-"`
-	SequenceID  CustomNullUUID     `json:"sequence-id"`
+	SequenceID  CustomNullUUID     `json:"sequence_id"`
 	StartTimestamp CustomDateAndTime `json:"start"`
 	EndTimestamp CustomDateAndTime `json:"end"`
 }

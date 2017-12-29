@@ -9,7 +9,7 @@
 					<div class="schedule-location-container-outer">
 						<div class="schedule-location-container-inner">
 							<div v-for="location in locations" class="schedule-location">
-								{{ location.name }}
+								<h5>{{ location.name }}</h5>
 							</div>
 						</div>
 					</div>
@@ -61,6 +61,7 @@ export default {
 	},
 	created: function () {
 		this.$store.dispatch(actions.GET_LOCATIONS);
+		//this.$store.dispatch(actions.GET_LOCATIONS);
 
 		const division = 30;
 		let currentTime = this.moment("00:00", "HH:mm");
@@ -80,6 +81,13 @@ export default {
 <style lang="scss" scoped>
 	$row-height: 48px;
 	$time-column-width: 50px;
+
+	h5 {
+		margin-top: 5px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
 
 	.schedule {
 		height: 100%;
@@ -126,6 +134,8 @@ export default {
 			overflow: hidden;
 			flex: 1 1 0;
 			display: flex;
+			justify-content: center;
+			text-align: center;
 
 			&-container {
 				&-outer {

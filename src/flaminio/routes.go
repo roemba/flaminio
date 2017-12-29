@@ -17,6 +17,7 @@ func setRoutes(router *gin.Engine) {
 	v1 := router.Group("/api/v1")
 	{
 		v1.POST("/auth/login", handlers.LoginHandler)
+		v1.GET("/locations/*uuid", handlers.GETLocationsHandler)
 		authorized := v1.Group("")
 		authorized.Use(validateTokenMiddleware)
 		{
@@ -25,7 +26,6 @@ func setRoutes(router *gin.Engine) {
 			authorized.POST("/auth/logout", handlers.LogoutHandler)
 
 			authorized.GET("/reservations", handlers.GETReservationsHandler)
-			authorized.GET("/locations/*uuid", handlers.GETLocationsHandler)
 
 			authorized.DELETE("/locations/:uuid", handlers.DELETELocationHandler)
 

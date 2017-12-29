@@ -1,16 +1,17 @@
 package handlers
 
 import (
-	"github.com/satori/go.uuid"
-	"net/http"
-	"fmt"
-	"flaminio/models"
-	"flaminio/database"
-	"github.com/gin-gonic/gin"
-	"time"
-	"errors"
-	"flaminio/utility"
 	"database/sql"
+	"errors"
+	"flaminio/database"
+	"flaminio/models"
+	"flaminio/utility"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/satori/go.uuid"
 )
 
 func GETReservationsHandler(c *gin.Context) {
@@ -28,7 +29,7 @@ func GETReservationsHandler(c *gin.Context) {
 		reservations []models.Reservation
 	)
 	if dateString, exists := c.GetQuery("date"); !exists {
-		date = time.Now()
+		date = time.Now().UTC()
 	} else {
 		date, err = time.Parse(utility.ISO8601DATE, dateString)
 		if err != nil {
@@ -63,28 +64,27 @@ func POSTReservationsHandler(c *gin.Context) {
 	}
 
 	var userInput struct {
-		Name        string                   `json:"name" binding:"required"`
-		Description string                   `json:"description"`
+		Name        string                      `json:"name" binding:"required,max=255"`
+		Description models.CustomNullString     `json:"description"`
 		StartTimestamp models.CustomDateAndTime `json:"start" binding:"required"`
-		EndTimestamp models.CustomDateAndTime `json:"end" binding:"required"`
-		LocationID  uuid.UUID                `json:"location_id" binding:"required"`
-		SequenceID  uuid.UUID                `json:"sequence_id"`
+		EndTimestamp models.CustomDateAndTime   `json:"end" binding:"required"`
+		LocationID  uuid.UUID                   `json:"location_id" binding:"required"`
+		SequenceID  models.CustomNullUUID       `json:"sequence_id"`
 	}
-
 	err := c.BindJSON(&userInput)
 
 	if err != nil || userInput.StartTimestamp.Time.IsZero() || userInput.EndTimestamp.Time.IsZero() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("error in request"))
+		c.AbortWithError(http.StatusBadRequest, errors.New("error in request" + err.Error()))
 		fmt.Fprint(c.Writer, "Error in request")
 		return
 	}
 
 	reservation := models.Reservation {
 		Name: userInput.Name,
-		Description: models.ToNullString(userInput.Description),
+		Description: userInput.Description,
 		CreatorID:   user.UUID,
 		LocationID:  userInput.LocationID,
-		SequenceID:  models.ToNullUUID(userInput.SequenceID),
+		SequenceID:  userInput.SequenceID,
 		StartTimestamp: userInput.StartTimestamp,
 		EndTimestamp: userInput.EndTimestamp,
 	}

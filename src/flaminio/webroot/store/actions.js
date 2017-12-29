@@ -1,6 +1,7 @@
 import Vue from "vue";
 import * as types from "./action-types";
 import * as mutations from "./mutation-types";
+import * as notifications from "../components/notification-types";
 import {i18n} from "@/lang";
 
 export default {
@@ -28,11 +29,11 @@ export default {
 		Vue.http.get(uri).then((response) => {
 			response.json().then((data) => {
 				commit(mutations.UPDATE_LOCATIONS, {locations: data});
+			}).catch(() => {
+				commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: i18n.t("errors.loadLocationFailed")});
 			});
-		}).catch((response) => {
-			//TODO Add proper error reporting
-			console.log(response.status);
-			console.log("catched!");
+		}).catch(() => {
+			commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: i18n.t("errors.loadLocationFailed")});
 		});
 	},
 

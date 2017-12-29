@@ -26,7 +26,11 @@
 					</div>
 				</li>
 			</ul>
-			<div class="navbar-nav dropdown mr-1">
+			<div v-if="notificationObject" :class="[notificationObject.class, 'navbar-nav', 'notification', 'align-self-stretch', 'mr-2', 'p-2']">
+				<p><font-awesome-icon class="mr-1" :icon="notificationObject.icon" />{{ notificationText }}</p>
+				<a class="ml-1" @click="closeNotification()" role="button" href="#"><font-awesome-icon :icon="closeIcon" /></a>
+			</div>
+			<div class="navbar-nav dropdown mr-1 align-self-stretch">
 				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownLanguage" data-toggle="dropdown"
 					aria-haspopup="true" aria-expanded="false"><font-awesome-icon :icon="languageIcon" /></button>
 				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownLanguage">
@@ -38,7 +42,7 @@
 					</a>
 				</div>
 			</div>
-			<div class="navbar-nav dropdown">
+			<div class="navbar-nav dropdown align-self-stretch">
 				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownUser" data-toggle="dropdown"
 					aria-haspopup="true" aria-expanded="false">{{ dropdownLabel }}</button>
 				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownUser">
@@ -50,8 +54,10 @@
 </template>
 
 <script>
-import {faGlobe} from "@fortawesome/fontawesome-free-solid";
+import {faGlobe, faExclamationTriangle, faExclamationCircle, faTimesCircle, faTimes} from "@fortawesome/fontawesome-free-solid";
 import * as actions from "../store/action-types";
+import * as mutations from "../store/mutation-types";
+import * as notifications from "./notification-types";
 
 export default {
 	computed: {
@@ -63,11 +69,37 @@ export default {
 		},
 		languageIcon: () => {
 			return faGlobe;
+		},
+		closeIcon: () => {
+			return faTimes;
+		},
+		notificationText: function () {
+			return this.$store.state.notification.text;
+		},
+		notificationObject: function () {
+			switch (this.$store.state.notification.type) {
+			case notifications.WARNING:
+				return {icon: faExclamationTriangle, class: {
+					"alert-warning": true
+					}};
+			case notifications.INFO:
+				return {icon: faExclamationCircle, class: {
+					"alert-info": true
+				}};
+			case notifications.CRITICAL:
+				return {icon: faTimesCircle, class: {
+					"alert-danger": true
+				}};
+			}
+			return false;
 		}
 	},
 	methods: {
 		changeLanguage: function (lang) {
 			this.$store.dispatch(actions.LOAD_LANGUAGE, lang);
+		},
+		closeNotification: function () {
+			this.$store.commit(mutations.DELETE_NOTIFICATION);
 		}
 	}
 };
@@ -77,6 +109,18 @@ export default {
 	nav {
 		background-color: #0A2239;
 		z-index: 3;
+	}
+
+	.navbar-nav.notification {
+		border-radius: $border-radius;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.navbar-nav.notification p {
+		margin: 0;
+		padding: 0 5px;
 	}
 
 	.dropdown-menu {
