@@ -36,7 +36,12 @@
 						</div>
 						<div v-for="location in locations" class="flex-table-column">
 							<div class="flex-table-column-holder">
-								<div :style="reservationStyle(reservation)" v-for="reservation in getReservationsByLocation(location.uuid)" class="entry-container rounded">Hallo!</div>
+								<div :style="reservationStyle(reservation)"
+									v-for="reservation in getReservationsByLocation(location.uuid)"
+									class="entry-container rounded">
+									<p>{{ reservation.name }}</p>
+									<p>{{ moment(reservation.duration.start, ISO8601DATE_TIME).format("HH:mm") }} - {{ moment(reservation.duration.end, ISO8601DATE_TIME).format("HH:mm") }}</p>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -118,24 +123,34 @@ export default {
 				width: "100%",
 				"z-index": "3"
 			};
-			const startTime = this.moment(reservation.start, this.ISO8601DATE_TIME);
-			const endTime = this.moment(reservation.end, this.ISO8601DATE_TIME);
+			const startTime = this.moment(reservation.duration.start, this.ISO8601DATE_TIME);
+			const endTime = this.moment(reservation.duration.end, this.ISO8601DATE_TIME);
+			const selectedTime = this.selectedDate;
+			selectedTime.set({"hour": 0, "minute": 0, "second": 0});
 			const halfHourHeightPx = 48.;
 			const minuteHeight = halfHourHeightPx/30.;
 			const hourFraction = startTime.hour() + (startTime.minute()/60.);
 			const totalHeight = halfHourHeightPx*48.;
-			console.log(hourFraction);
 
-			const topOffset = Math.round(2.*halfHourHeightPx*hourFraction);
-			styleObject.top = topOffset + "px";
+			if (startTime.isSame(selectedTime, "day")) {
+				const topOffset = Math.round(2.*halfHourHeightPx*hourFraction);
+				styleObject.top = topOffset + "px";
 
-			const minuteDifference = endTime.diff(startTime, "minutes");
-			let height = minuteDifference*minuteHeight;
-			if ((height + topOffset) > totalHeight) {
-				height -= (height + topOffset - totalHeight);
+				const minuteDifference = endTime.diff(startTime, "minutes");
+				let height = minuteDifference*minuteHeight;
+				if ((height + topOffset) > totalHeight) {
+					height -= (height + topOffset - totalHeight);
+				}
+				styleObject.height = Math.round(height) + "px";
+			} else if (endTime.isSame(selectedTime, "day")) {
+				styleObject.top = "0";
+
+				const minuteDifference = endTime.diff(selectedTime, "minutes");
+				styleObject.height = Math.round(minuteDifference*minuteHeight) + "px";
+			} else {
+				styleObject.top = "0";
+				styleObject.height = Math.round(totalHeight) + "px";
 			}
-			styleObject.height = Math.round(height) + "px";
-
 
 			return styleObject;
 		}
@@ -312,6 +327,8 @@ export default {
 		position: absolute;
 		outline: none;
 		background-color: #00a6d6;
+		overflow: hidden;
+		color: white;
 	}
 
 </style>

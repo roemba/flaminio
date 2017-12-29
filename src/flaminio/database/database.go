@@ -132,7 +132,7 @@ func CreateLocation(l *models.Location) (locationUUID uuid.UUID, err error) {
 }
 
 func GetLocations() (locationsArray []models.Location, err error) {
-	rows, err := db.Queryx(`SELECT * FROM flaminio.locations`)
+	rows, err := db.Queryx(`SELECT * FROM flaminio.locations ORDER BY name ASC`)
 	if err != sql.ErrNoRows {
 		utility.Fatal(err)
 	} else {

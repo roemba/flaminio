@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+//TODO Change to customTimeStamp, and use timestamp type
 type CustomDateAndTime struct {
 	time.Time
 }
