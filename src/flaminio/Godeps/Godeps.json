@@ -46,6 +46,36 @@
 			"Rev": "1e59b77b52bf8e4b449a57e6f79f21226d571845"
 		},
 		{
+			"ImportPath": "github.com/jackc/pgx",
+			"Comment": "v3.0.1-96-g4fb47ac",
+			"Rev": "4fb47ac8c9677c49cfa0f4ae61c0d0116c0a07fc"
+		},
+		{
+			"ImportPath": "github.com/jackc/pgx/chunkreader",
+			"Comment": "v3.0.1-96-g4fb47ac",
+			"Rev": "4fb47ac8c9677c49cfa0f4ae61c0d0116c0a07fc"
+		},
+		{
+			"ImportPath": "github.com/jackc/pgx/internal/sanitize",
+			"Comment": "v3.0.1-96-g4fb47ac",
+			"Rev": "4fb47ac8c9677c49cfa0f4ae61c0d0116c0a07fc"
+		},
+		{
+			"ImportPath": "github.com/jackc/pgx/pgio",
+			"Comment": "v3.0.1-96-g4fb47ac",
+			"Rev": "4fb47ac8c9677c49cfa0f4ae61c0d0116c0a07fc"
+		},
+		{
+			"ImportPath": "github.com/jackc/pgx/pgproto3",
+			"Comment": "v3.0.1-96-g4fb47ac",
+			"Rev": "4fb47ac8c9677c49cfa0f4ae61c0d0116c0a07fc"
+		},
+		{
+			"ImportPath": "github.com/jackc/pgx/pgtype",
+			"Comment": "v3.0.1-96-g4fb47ac",
+			"Rev": "4fb47ac8c9677c49cfa0f4ae61c0d0116c0a07fc"
+		},
+		{
 			"ImportPath": "github.com/jinzhu/gorm/dialects/postgres",
 			"Comment": "v1.0-176-g0a51f6c",
 			"Rev": "0a51f6cdc55d1650d9ed3b4c13026cfa9133b01e"
@@ -84,6 +114,11 @@
 			"ImportPath": "github.com/mattn/go-isatty",
 			"Comment": "v0.0.3-7-g6ca4dbf",
 			"Rev": "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
+		},
+		{
+			"ImportPath": "github.com/pkg/errors",
+			"Comment": "v0.8.0-10-ge881fd5",
+			"Rev": "e881fd58d78e04cf6d0de1217f8707c8cc2249bc"
 		},
 		{
 			"ImportPath": "github.com/satori/go.uuid",

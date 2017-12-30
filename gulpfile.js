@@ -17,7 +17,7 @@ gulp.task("clean", () => {
 });
 
 gulp.task("copy-static-files", () => {
-	return gulp.src([`${WEBROOT}/**/*.html`])
+	return gulp.src([`${WEBROOT}/**/*.html`, `${WEBROOT}/images/favicons/*`])
 		.pipe(gulp.dest(`${DIST_FOLDER}`));
 });
 
