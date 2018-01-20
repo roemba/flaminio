@@ -18,7 +18,19 @@ export default {
 	created: function () {
 		this.$auth.ready(function () {
 			this.$store.dispatch(actions.LOAD_LANGUAGE, this.$auth.user().preferred_locale);
+			this.refreshStoredData();
 		});
+	},
+	methods: {
+		refreshStoredData: function (){
+			this.$store.dispatch(actions.GET_LOCATIONS);
+
+			return new Promise((resolve) => {
+				setTimeout(() => {resolve();}, this.$store.state.refreshInterval);
+			}).then(() => {
+				return this.refreshStoredData();
+			});
+		}
 	}
 };
 </script>

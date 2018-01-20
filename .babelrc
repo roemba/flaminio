@@ -1,0 +1,10 @@
+{
+  "presets": [
+	["env", {
+	  "targets": {
+		"browsers": ["last 2 Firefox versions"]
+	  }
+	}]
+  ],
+  "plugins": ["syntax-dynamic-import", "babel-plugin-transform-object-rest-spread"]
+}

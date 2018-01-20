@@ -54,35 +54,32 @@
 
 <script>
 import * as actions from "../../store/action-types";
-import * as mutations from "../../store/mutation-types";
-import * as notifications from "../notification-types";
+import { mapState } from "vuex";
 
 export default {
 	data: function () {
 		return {
-			reservations: [],
 			times: [],
-			selectedDate: undefined
 		};
 	},
 	computed: {
-		locations: function () {
-			return this.$store.state.locations;
-		},
+		...mapState({
+			locations: (state) => {return state.locations;},
+			reservations: (state) => {return state.schedule.reservations;},
+			selectedDate: (state) => {return state.schedule.selectedDate;}
+		}),
 		selectedDateFunction: {
 			get: function () {
 				return this.selectedDate.format("L");
 			},
 			set: function (newValue) {
 				this.selectedDate = this.moment(newValue, "L");
-				this.loadReservations();
+				this.$store.dispatch(actions.FETCH_RESERVATIONS, {date: this.selectedDate});
 			}
 		}
 	},
 	created: function () {
-		this.$store.dispatch(actions.GET_LOCATIONS);
-		this.selectedDate = this.moment();
-		this.loadReservations();
+		this.$store.dispatch(actions.FETCH_RESERVATIONS, {date: this.selectedDate});
 
 		const division = 30;
 		let currentTime = this.moment("00:00", "HH:mm");
@@ -94,17 +91,6 @@ export default {
 	methods: {
 		synchronizeScroll: function (event) {
 			this.$refs.timeContainer.scrollTop = event.target.scrollTop;
-		},
-		loadReservations: function () {
-			this.$http.get("reservations?date=" + this.selectedDate.format(this.ISO8601DATE)).then((response) => {
-				response.json().then((data) => {
-					this.reservations = data;
-				}).catch(() => {
-					this.$store.commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: this.$t("errors.loadLocationFailed")});
-				});
-			}).catch(() => {
-				this.$store.commit(mutations.SHOW_NOTIFICATION, {type: notifications.CRITICAL, text: this.$t("errors.loadLocationFailed")});
-			});
 		},
 		getReservationsByLocation: function (locationUUID) {
 			let reservationArray = [];
@@ -127,13 +113,19 @@ export default {
 			const endTime = this.moment(reservation.duration.end, this.ISO8601DATE_TIME);
 			const selectedTime = this.selectedDate;
 			selectedTime.set({"hour": 0, "minute": 0, "second": 0});
-			const halfHourHeightPx = 48.;
-			const minuteHeight = halfHourHeightPx/30.;
-			const hourFraction = startTime.hour() + (startTime.minute()/60.);
-			const totalHeight = halfHourHeightPx*48.;
+
+			const rowHeightPx = 48.;
+			const totalHoursDisplayed = 24.;
+			const nOfMinutesInRow = 30.;
+			const nOfMinutesInHour = 60.;
+
+			const nofRows = (totalHoursDisplayed*nOfMinutesInHour)/nOfMinutesInRow;
+			const minuteHeight = rowHeightPx/nOfMinutesInRow;
+			const timeFraction = startTime.hour() + (startTime.minute()/nOfMinutesInHour);
+			const totalHeight = rowHeightPx*nofRows;
 
 			if (startTime.isSame(selectedTime, "day")) {
-				const topOffset = Math.round(2.*halfHourHeightPx*hourFraction);
+				const topOffset = Math.round(2.*rowHeightPx*timeFraction);
 				styleObject.top = topOffset + "px";
 
 				const minuteDifference = endTime.diff(startTime, "minutes");

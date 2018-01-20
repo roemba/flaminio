@@ -1,7 +1,7 @@
 import Vue from "vue";
 import * as types from "./action-types";
 import * as mutations from "./mutation-types";
-import * as notifications from "../components/notification-types";
+import * as notifications from "./notification-types";
 import {i18n} from "@/lang";
 
 const ISO8601DATE = "Y-MM-DD";

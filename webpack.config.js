@@ -18,13 +18,7 @@ module.exports = {
 			{
 				test: /\.js$/,
 				exclude: /(node_modules)/,
-				use: {
-					loader: "babel-loader",
-					options: {
-						presets: ["env"],
-						plugins: ["syntax-dynamic-import"]
-					}
-				}
+				loader: "babel-loader"
 			},
 			{
 				test: /\.vue$/,

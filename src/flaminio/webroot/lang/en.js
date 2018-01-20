@@ -34,7 +34,8 @@ export default {
 			welcome: "Welcome {name}!"
 		},
 		errors: {
-			loadLocationFailed: "Failed to load locations."
+			loadLocationFailed: "Failed to load locations.",
+			loadReservationFailed: "Failed to load reservations."
 		}
 	}
 };

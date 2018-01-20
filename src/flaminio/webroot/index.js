@@ -1,3 +1,4 @@
+//import "babel-polyfill";
 import Vue from "vue";
 import VueResource from "vue-resource";
 import VueAuth from "@websanova/vue-auth";
@@ -6,10 +7,11 @@ import store from "./store";
 import router from "./routes";
 import {i18n} from "./lang";
 import FontAwesomeIcon from "@fortawesome/vue-fontawesome";
+import constants from "./global-constants";
 
 import "popper.js";
 import "bootstrap";
-import moment from "moment";
+
 Vue.use(VueResource);
 Vue.http.options.root = "/api/v1";
 Vue.router = router;
@@ -28,11 +30,7 @@ Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 Vue.mixin({
 	data () {
-		return {
-			moment: moment,
-			ISO8601DATE: "Y-MM-DD",
-			ISO8601DATE_TIME: "Y-MM-DD HH:mm:ss"
-		};
+		return constants;
 	}
 });
 

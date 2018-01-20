@@ -57,7 +57,7 @@
 import {faGlobe, faExclamationTriangle, faExclamationCircle, faTimesCircle, faTimes} from "@fortawesome/fontawesome-free-solid";
 import * as actions from "../store/action-types";
 import * as mutations from "../store/mutation-types";
-import * as notifications from "./notification-types";
+import * as notifications from "../store/notification-types";
 
 export default {
 	computed: {
@@ -81,7 +81,7 @@ export default {
 			case notifications.WARNING:
 				return {icon: faExclamationTriangle, class: {
 					"alert-warning": true
-					}};
+				}};
 			case notifications.INFO:
 				return {icon: faExclamationCircle, class: {
 					"alert-info": true
