@@ -237,6 +237,7 @@ func createReservationsTable() (err error) {
 					locationId uuid NOT NULL REFERENCES flaminio.locations ON DELETE CASCADE ON UPDATE CASCADE,
 					sequenceId uuid REFERENCES flaminio.sequences ON DELETE CASCADE ON UPDATE CASCADE,
 					duration tsrange NOT NULL,
+					color character(6) NOT NULL,
 					EXCLUDE USING gist (locationid WITH =, duration WITH &&)
 				)`)
 	return err

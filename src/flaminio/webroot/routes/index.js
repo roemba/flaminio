@@ -4,7 +4,7 @@ import Login from "../components/pages/login.vue";
 import Dashboard from "../components/pages/dashboard.vue";
 import Forbidden from "../components/pages/403.vue";
 import NotFound from "../components/pages/404.vue";
-import Schedule from "../components/pages/schedule.vue";
+const Schedule = () => {return import(/* webpackChunkName: "schedule"*/ "../components/pages/schedule/index.vue");};
 
 Vue.use(VueRouter);
 

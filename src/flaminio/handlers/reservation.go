@@ -69,6 +69,7 @@ func POSTReservationsHandler(c *gin.Context) {
 		Duration    models.CustomTsrange        `json:"duration"`
 		LocationID  uuid.UUID                   `json:"location_id" binding:"required"`
 		SequenceID  models.CustomNullUUID       `json:"sequence_id"`
+		Color       models.CustomNullString     `json:"color"`
 	}
 	err := c.BindJSON(&userInput)
 
@@ -80,12 +81,18 @@ func POSTReservationsHandler(c *gin.Context) {
 	}
 
 	reservation := models.Reservation {
-		Name: userInput.Name,
-		Description: userInput.Description,
-		CreatorID:   user.UUID,
-		LocationID:  userInput.LocationID,
-		SequenceID:  userInput.SequenceID,
-		Duration: userInput.Duration,
+		Name:           userInput.Name,
+		Description:    userInput.Description,
+		CreatorID:      user.UUID,
+		LocationID:     userInput.LocationID,
+		SequenceID:     userInput.SequenceID,
+		Duration:       userInput.Duration,
+	}
+
+	if !userInput.Color.Valid {
+		reservation.Color = "006080"
+	} else {
+		reservation.Color = userInput.Color.String
 	}
 
 	reservationUUID, err := database.CreateReservation(&reservation)

@@ -1,4 +1,3 @@
-//import "babel-polyfill";
 import Vue from "vue";
 import VueResource from "vue-resource";
 import VueAuth from "@websanova/vue-auth";
@@ -11,6 +10,9 @@ import constants from "./global-constants";
 
 import "popper.js";
 import "bootstrap";
+import moment from "moment";
+import VueMomentJS from "vue-momentjs";
+Vue.use(VueMomentJS, moment);
 
 Vue.use(VueResource);
 Vue.http.options.root = "/api/v1";

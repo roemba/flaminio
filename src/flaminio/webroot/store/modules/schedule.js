@@ -2,7 +2,7 @@ import moment from "moment";
 import Vue from "vue";
 import * as notifications from "../notification-types";
 import {i18n} from "@/lang";
-import constants from "../../global-constants";
+import constants from "@/global-constants";
 import * as actions from "../action-types";
 import * as mutations from "../mutation-types";
 
@@ -18,6 +18,9 @@ export default {
 		},
 		[mutations.CHANGE_LOCALE](state, payload) {
 			state.selectedDate.locale(payload.locale);
+		},
+		[mutations.UPDATE_SELECTED_DATE](state, payload) {
+			state.selectedDate = Vue.moment(payload.newValue, "L");
 		},
 	},
 	actions: {

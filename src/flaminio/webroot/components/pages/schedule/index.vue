@@ -39,8 +39,7 @@
 								<div :style="reservationStyle(reservation)"
 									v-for="reservation in getReservationsByLocation(location.uuid)"
 									class="entry-container rounded">
-									<p>{{ reservation.name }}</p>
-									<p>{{ moment(reservation.duration.start, ISO8601DATE_TIME).format("HH:mm") }} - {{ moment(reservation.duration.end, ISO8601DATE_TIME).format("HH:mm") }}</p>
+									<reservationComp :reservation="reservation"/>
 								</div>
 							</div>
 						</div>
@@ -53,10 +52,13 @@
 </template>
 
 <script>
-import * as actions from "../../store/action-types";
+import * as actions from "@/store/action-types";
+import * as mutations from "@/store/mutation-types";
+import reservationComp from "./reservation.vue";
 import { mapState } from "vuex";
 
 export default {
+	components: {reservationComp},
 	data: function () {
 		return {
 			times: [],
@@ -73,7 +75,7 @@ export default {
 				return this.selectedDate.format("L");
 			},
 			set: function (newValue) {
-				this.selectedDate = this.moment(newValue, "L");
+				this.$store.commit(mutations.UPDATE_SELECTED_DATE, {newValue});
 				this.$store.dispatch(actions.FETCH_RESERVATIONS, {date: this.selectedDate});
 			}
 		}
@@ -82,9 +84,9 @@ export default {
 		this.$store.dispatch(actions.FETCH_RESERVATIONS, {date: this.selectedDate});
 
 		const division = 30;
-		let currentTime = this.moment("00:00", "HH:mm");
+		let currentTime = this.$moment("00:00", "HH:mm");
 
-		for (currentTime; currentTime.isBefore(this.moment("23:31", "HH:mm")); currentTime.add(division, "minutes")) {
+		for (currentTime; currentTime.isBefore(this.$moment("23:31", "HH:mm")); currentTime.add(division, "minutes")) {
 			this.times.push(currentTime.format("HH:mm"));
 		}
 	},
@@ -109,8 +111,8 @@ export default {
 				width: "100%",
 				"z-index": "3"
 			};
-			const startTime = this.moment(reservation.duration.start, this.ISO8601DATE_TIME);
-			const endTime = this.moment(reservation.duration.end, this.ISO8601DATE_TIME);
+			const startTime = this.$moment(reservation.duration.start, this.ISO8601DATE_TIME);
+			const endTime = this.$moment(reservation.duration.end, this.ISO8601DATE_TIME);
 			const selectedTime = this.selectedDate;
 			selectedTime.set({"hour": 0, "minute": 0, "second": 0});
 
@@ -318,9 +320,7 @@ export default {
 	.entry-container {
 		position: absolute;
 		outline: none;
-		background-color: #00a6d6;
 		overflow: hidden;
-		color: white;
 	}
 
 </style>

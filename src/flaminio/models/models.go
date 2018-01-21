@@ -52,8 +52,9 @@ type Reservation struct {
 	Location    Location          `json:"-"`
 	LocationID  uuid.UUID         `json:"location_id"`
 	Sequence    Sequence          `json:"-"`
-	SequenceID  CustomNullUUID     `json:"sequence_id"`
+	SequenceID  CustomNullUUID    `json:"sequence_id"`
 	Duration    CustomTsrange     `json:"duration"`
+	Color       string            `json:"color"`
 }
 
 type Log struct {

@@ -121,8 +121,8 @@ func GetReservationsByDateAndLocation(date time.Time, locationStringArray []stri
 
 func CreateReservation(r *models.Reservation) (reservationUUID uuid.UUID, err error) {
 	err = db.QueryRow(`INSERT INTO flaminio.reservations (name, description, creatorId, locationId, sequenceId,
- 								duration) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uuid`, r.Name, r.Description,
- 									r.CreatorID, r.LocationID, r.SequenceID, r.Duration).Scan(&reservationUUID)
+ 								duration, color) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING uuid`, r.Name, r.Description,
+ 									r.CreatorID, r.LocationID, r.SequenceID, r.Duration, r.Color).Scan(&reservationUUID)
 	return reservationUUID, err
 }
 

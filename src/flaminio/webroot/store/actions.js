@@ -25,7 +25,11 @@ export default {
 	[types.LOAD_LANGUAGE]({state, commit}, locale) {
 		if (i18n.locale !== locale) {
 			if (state.loadedLanguages.indexOf(locale) === -1) {
-				import(/* webpackChunkName: "lang-[request]"*/ `@/lang/${locale}`).then((msgs) => {
+				import(
+					/* webpackChunkName: "lang-[request]"*/
+					/* webpackMode: "lazy-once"*/
+					`@/lang/${locale}`
+				).then((msgs) => {
 					i18n.setLocaleMessage(locale, msgs.default);
 					commit(mutations.ADD_LOADED_LANGUAGE, {locale: locale});
 					commit(mutations.CHANGE_LOCALE, {locale: locale});
@@ -37,9 +41,9 @@ export default {
 	},
 
 	[types.GET_LOCATIONS]({commit}, payload) {
-		let uri = "locations";
+		let uri = "locations/";
 		if (payload !== undefined && payload.hasOwnProperty("uuid")) {
-			uri += "/" + payload.uuid;
+			uri += payload.uuid;
 		}
 
 		Vue.http.get(uri).then((response) => {

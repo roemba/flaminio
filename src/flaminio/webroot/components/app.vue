@@ -51,9 +51,12 @@ export default {
 <style lang="scss" global>
 	@import "~bootstrap/scss/bootstrap.scss";
 	@import "../scss/flag-icon-base.scss";
+	@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700');
+
 	body {
 		background-color: #132E32;
 		color: white;
+		font-family: 'Roboto', sans-serif;
 	}
 
 	html, body {
@@ -61,7 +64,7 @@ export default {
 	}
 
 	.container-fluid {
-		padding: 0 0 15px 0;
+		padding: 0 0 0 0;
 	}
 
 	button {
