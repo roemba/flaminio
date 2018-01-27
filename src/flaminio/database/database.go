@@ -19,7 +19,7 @@ func ConnectToDatabase(dbUrl string){
 	var err error
 	db = sqlx.MustConnect("postgres", dbUrl)
 
-	err = migrate()
+	err = migrateDatabase()
 	utility.LogFatal(err)
 }
 

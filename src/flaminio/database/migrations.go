@@ -6,6 +6,10 @@ import (
 	"flaminio/utility"
 	"log"
 
+	//"github.com/mattes/migrate"
+	//"github.com/mattes/migrate/database/postgres"
+	//_ "github.com/mattes/migrate/source/file"
+	
 	"github.com/satori/go.uuid"
 )
 
@@ -23,8 +27,14 @@ func fatal(err error, tx *sql.Tx) {
 /*
 All migrations will run only once on startup so performance impact will be minimal when the application is running
  */
-func migrate() (err error) {
+func migrateDatabase() (err error) {
 	log.Println("Starting migration...")
+
+	//driver, err := postgres.WithInstance(db.DB, &postgres.Config{})
+	//m, err := migrate.NewWithDatabaseInstance(
+	//	"file://database/migrations",
+	//	"postgres", driver)
+	//m.Up()
 
 	err = createUsersTable()
 	if err != nil {
