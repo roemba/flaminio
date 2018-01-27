@@ -67,7 +67,7 @@ func migrate() (err error) {
 
 func createLogAndOperationsTable() (err error) {
 	tx, err := db.Begin()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	_, err = tx.Exec(`CREATE TABLE IF NOT EXISTS flaminio.log_operation_types (
 					` + standardModel + `
@@ -118,7 +118,7 @@ func createLogAndOperationsTable() (err error) {
 
 func createUsersTable() (err error) {
 	tx, err := db.Begin()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	_, err = tx.Exec(`CREATE TABLE IF NOT EXISTS flaminio.users (
 					` + standardModel + `
@@ -132,7 +132,7 @@ func createUsersTable() (err error) {
 	fatal(err, tx)
 
 	hashedPassword, err := utility.HashPassword("admin")
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	user := models.User{FirstName:"admin", LastName:"admin", Email:"admin@admin.com", Password:hashedPassword}
 	_, err = tx.Exec(`INSERT INTO flaminio.users (firstName, lastName, password, email)
@@ -142,13 +142,13 @@ func createUsersTable() (err error) {
 	fatal(err, tx)
 
 	err = tx.Commit()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 	return
 }
 
 func createPermissionsTable() (err error) {
 	tx, err := db.Begin()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	_, err = tx.Exec(`CREATE TABLE IF NOT EXISTS flaminio.permissions (
 					` + standardModel + `
@@ -206,7 +206,7 @@ func createPermissionsTable() (err error) {
 	}
 
 	err = tx.Commit()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 	return
 }
 

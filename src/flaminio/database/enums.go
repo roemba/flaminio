@@ -13,7 +13,7 @@ func GetEnums(){
 var PermissionsMap map[string]uuid.UUID
 func getPermissionMap() (permissionMap map[string]uuid.UUID) {
 	permissionArray, err := GetPermissionArray()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	permissionMap = make(map[string]uuid.UUID)
 	for _, e := range permissionArray {
@@ -25,7 +25,7 @@ func getPermissionMap() (permissionMap map[string]uuid.UUID) {
 var LogOperationTypeMap map[string]uuid.UUID
 func getLogOperationMap() (logOperationTypeMap map[string]uuid.UUID) {
 	operationsArray, err := GetLogOperationsArray()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	logOperationTypeMap = make(map[string]uuid.UUID)
 	for _, e := range operationsArray {

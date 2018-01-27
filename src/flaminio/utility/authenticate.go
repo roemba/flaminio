@@ -1,34 +1,42 @@
 package utility
 
 import (
-	"io/ioutil"
-	"github.com/dgrijalva/jwt-go"
 	"crypto/rsa"
-	"golang.org/x/crypto/bcrypt"
-)
+	"fmt"
+	"io/ioutil"
 
-const (
-	privKeyPath              = "app.rsa"
-	pubKeyPath               = "app.rsa.pub"
+	"github.com/dgrijalva/jwt-go"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
 	VerifyKey *rsa.PublicKey
 	SignKey   *rsa.PrivateKey
+	IsDebug   bool
 )
 
-func InitKeys() {
+func Init(privKeyPath string, pubKeyPath string, isDebug bool) {
+	IsDebug = isDebug
+	initKeys(privKeyPath, pubKeyPath)
+}
+
+func initKeys(privKeyPath string, pubKeyPath string) {
+	LogDebug("Attempting signing tokens with supplied public and private key.")
+	LogDebug(fmt.Sprintf("Public key path: %s", pubKeyPath))
+	LogDebug(fmt.Sprintf("Private key path: %s", privKeyPath))
+
 	signBytes, err := ioutil.ReadFile(privKeyPath)
-	Fatal(err)
+	LogFatal(err)
 
 	SignKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	Fatal(err)
+	LogFatal(err)
 
 	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
-	Fatal(err)
+	LogFatal(err)
 
 	VerifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	Fatal(err)
+	LogFatal(err)
 }
 
 func HashPassword(password string) (string, error) {

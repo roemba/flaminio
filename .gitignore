@@ -147,5 +147,4 @@ typings/
 public/
 pkg/
 bin/
-src/github.com/
-src/golang.org/
+src/flaminio/vendor

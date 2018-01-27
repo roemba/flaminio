@@ -53,7 +53,7 @@ func LoginHandler(c *gin.Context) {
 
 	user, err := database.GetUserByEmail(userInput.Email)
 	if err != sql.ErrNoRows {
-		utility.Fatal(err)
+		utility.LogFatal(err)
 	}
 
 	if err == sql.ErrNoRows || !utility.CheckPasswordHash(userInput.Password, user.Password) {

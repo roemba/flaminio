@@ -15,13 +15,12 @@ import (
 
 var db *sqlx.DB
 
-func ConnectToDatabase(){
+func ConnectToDatabase(dbUrl string){
 	var err error
-	db, err = sqlx.Open("postgres", "user=flaminio dbname=flaminio sslmode=disable password=ZzS08RNyosHD2xg49k9Z")
-	utility.Fatal(err)
+	db = sqlx.MustConnect("postgres", dbUrl)
 
 	err = migrate()
-	utility.Fatal(err)
+	utility.LogFatal(err)
 }
 
 /*
@@ -41,13 +40,13 @@ func GetPermissionsForUser(user models.User) (models.User, error) {
 	rows, err := db.Queryx(`SELECT p.* FROM flaminio.user_permissions AS up
 								INNER JOIN flaminio.permissions AS p ON up.permissionId = p.uuid
 								WHERE up.userId = $1`, user.UUID)
-	utility.Fatal(err)
+	utility.LogFatal(err)
 	defer rows.Close()
 
 	for rows.Next() {
 		var permission models.Permission
 		err := rows.StructScan(&permission)
-		utility.Fatal(err)
+		utility.LogFatal(err)
 
 		user.Permissions = append(user.Permissions, permission)
 	}
@@ -67,7 +66,7 @@ func GetPermissionArray() (permissionsArray []models.Permission, err error) {
 	for rows.Next() {
 		var permission models.Permission
 		err := rows.StructScan(&permission)
-		utility.Fatal(err)
+		utility.LogFatal(err)
 
 		permissionsArray = append(permissionsArray, permission)
 	}
@@ -77,13 +76,13 @@ func GetPermissionArray() (permissionsArray []models.Permission, err error) {
 
 func GetLogOperationsArray() (operationsArray []models.LogOperationType, err error) {
 	rows, err := db.Queryx("SELECT * FROM flaminio.log_operation_types")
-	utility.Fatal(err)
+	utility.LogFatal(err)
 	defer rows.Close()
 
 	for rows.Next() {
 		var operationType models.LogOperationType
 		err := rows.StructScan(&operationType)
-		utility.Fatal(err)
+		utility.LogFatal(err)
 
 		operationsArray = append(operationsArray, operationType)
 	}
@@ -95,7 +94,7 @@ func GetReservationsByDate(date time.Time) (reservationsArray []models.Reservati
 	rows, err := db.Queryx(`SELECT * FROM flaminio.reservations AS r WHERE lower(r.duration)::date <= $1::date
 									AND upper(r.duration)::date >= $1::date`, date.Format(utility.ISO8601DATE))
 	if err != sql.ErrNoRows {
-		utility.Fatal(err)
+		utility.LogFatal(err)
 	} else {
 		rows.Close()
 		return nil, err
@@ -106,7 +105,7 @@ func GetReservationsByDate(date time.Time) (reservationsArray []models.Reservati
 	for rows.Next() {
 		var reservation models.Reservation
 		err := rows.StructScan(&reservation)
-		utility.Fatal(err)
+		utility.LogFatal(err)
 
 		reservationsArray = append(reservationsArray, reservation)
 	}
@@ -134,7 +133,7 @@ func CreateLocation(l *models.Location) (locationUUID uuid.UUID, err error) {
 func GetLocations() (locationsArray []models.Location, err error) {
 	rows, err := db.Queryx(`SELECT * FROM flaminio.locations ORDER BY name ASC`)
 	if err != sql.ErrNoRows {
-		utility.Fatal(err)
+		utility.LogFatal(err)
 	} else {
 		rows.Close()
 		return nil, err
@@ -145,7 +144,7 @@ func GetLocations() (locationsArray []models.Location, err error) {
 	for rows.Next() {
 		var location models.Location
 		err := rows.StructScan(&location)
-		utility.Fatal(err)
+		utility.LogFatal(err)
 
 		locationsArray = append(locationsArray, location)
 	}
@@ -171,7 +170,7 @@ func UpdateLocation(l *models.Location) (err error) {
 
 func AddTokenToBlacklist(token *jwt.Token) (err error) {
 	_, err = db.Exec(`DELETE FROM flaminio.token_blacklist WHERE revocationDate <= ((NOW() AT TIME ZONE 'utc') - INTERVAL '12 hours')`)
-	utility.Fatal(err)
+	utility.LogFatal(err)
 
 	hasher := sha256.New()
 	hasher.Write([]byte(token.Raw))
@@ -187,7 +186,7 @@ func IsTokenBlacklisted(token *jwt.Token) (revoked bool) {
 	if err == sql.ErrNoRows {
 		return false
 	} else if err != nil {
-		utility.Fatal(err)
+		utility.LogFatal(err)
 	}
 	return true
 }

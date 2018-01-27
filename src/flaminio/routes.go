@@ -1,4 +1,4 @@
-package flaminio
+package main
 
 import (
 	"flaminio/handlers"

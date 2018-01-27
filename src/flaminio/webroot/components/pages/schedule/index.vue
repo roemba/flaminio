@@ -32,7 +32,7 @@
 				<div class="schedule-entry-container" @scroll="synchronizeScroll">
 					<div class="flex-table">
 						<div>
-							<div v-for="time in times" class="horizontal-divider"/>
+							<div v-for="time in times" class="horizontal-divider"/> <!-- eslint-disable-line vue/no-unused-vars -->
 						</div>
 						<div v-for="location in locations" class="flex-table-column">
 							<div class="flex-table-column-holder">

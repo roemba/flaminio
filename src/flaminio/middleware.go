@@ -1,17 +1,18 @@
-package flaminio
+package main
 
 import (
-	"net/http"
-	"github.com/dgrijalva/jwt-go/request"
-	"github.com/dgrijalva/jwt-go"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"errors"
-	"github.com/satori/go.uuid"
-	"flaminio/database"
-	"flaminio/utility"
-	"flaminio/models"
 	"database/sql"
+	"errors"
+	"flaminio/database"
+	"flaminio/models"
+	"flaminio/utility"
+	"fmt"
+	"net/http"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/request"
+	"github.com/gin-gonic/gin"
+	"github.com/satori/go.uuid"
 )
 
 func validateTokenMiddleware(c *gin.Context){
@@ -53,9 +54,9 @@ func validateTokenMiddleware(c *gin.Context){
 				fmt.Fprint(c.Writer, "User does not exist")
 				return
 			}
-			utility.Fatal(err)
+			utility.LogFatal(err)
 			user, err = database.GetPermissionsForUser(user)
-			utility.Fatal(err)
+			utility.LogFatal(err)
 
 			c.Set("user", user)
 			c.Set("token", token)
